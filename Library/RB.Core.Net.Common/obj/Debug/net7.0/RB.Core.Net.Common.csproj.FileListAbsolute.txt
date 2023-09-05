@@ -1,0 +1,12 @@
+/Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Library/RB.Core.Net.Common/bin/Debug/net7.0/RB.Core.Net.Common.deps.json
+/Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Library/RB.Core.Net.Common/bin/Debug/net7.0/RB.Core.Net.Common.dll
+/Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Library/RB.Core.Net.Common/bin/Debug/net7.0/RB.Core.Net.Common.pdb
+/Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Library/RB.Core.Net.Common/obj/Debug/net7.0/RB.Core.Net.Common.csproj.AssemblyReference.cache
+/Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Library/RB.Core.Net.Common/obj/Debug/net7.0/RB.Core.Net.Common.GeneratedMSBuildEditorConfig.editorconfig
+/Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Library/RB.Core.Net.Common/obj/Debug/net7.0/RB.Core.Net.Common.AssemblyInfoInputs.cache
+/Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Library/RB.Core.Net.Common/obj/Debug/net7.0/RB.Core.Net.Common.AssemblyInfo.cs
+/Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Library/RB.Core.Net.Common/obj/Debug/net7.0/RB.Core.Net.Common.csproj.CoreCompileInputs.cache
+/Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Library/RB.Core.Net.Common/obj/Debug/net7.0/RB.Core.Net.Common.dll
+/Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Library/RB.Core.Net.Common/obj/Debug/net7.0/refint/RB.Core.Net.Common.dll
+/Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Library/RB.Core.Net.Common/obj/Debug/net7.0/RB.Core.Net.Common.pdb
+/Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Library/RB.Core.Net.Common/obj/Debug/net7.0/ref/RB.Core.Net.Common.dll

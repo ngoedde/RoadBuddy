@@ -1,0 +1,12 @@
+/Users/ngoedde/Projects/playground/rspack/RSPack/bin/Debug/net6.0/RSPack.deps.json
+/Users/ngoedde/Projects/playground/rspack/RSPack/bin/Debug/net6.0/RSPack.dll
+/Users/ngoedde/Projects/playground/rspack/RSPack/bin/Debug/net6.0/RSPack.pdb
+/Users/ngoedde/Projects/playground/rspack/RSPack/obj/Debug/net6.0/RSPack.csproj.AssemblyReference.cache
+/Users/ngoedde/Projects/playground/rspack/RSPack/obj/Debug/net6.0/RSPack.GeneratedMSBuildEditorConfig.editorconfig
+/Users/ngoedde/Projects/playground/rspack/RSPack/obj/Debug/net6.0/RSPack.AssemblyInfoInputs.cache
+/Users/ngoedde/Projects/playground/rspack/RSPack/obj/Debug/net6.0/RSPack.AssemblyInfo.cs
+/Users/ngoedde/Projects/playground/rspack/RSPack/obj/Debug/net6.0/RSPack.csproj.CoreCompileInputs.cache
+/Users/ngoedde/Projects/playground/rspack/RSPack/obj/Debug/net6.0/RSPack.dll
+/Users/ngoedde/Projects/playground/rspack/RSPack/obj/Debug/net6.0/refint/RSPack.dll
+/Users/ngoedde/Projects/playground/rspack/RSPack/obj/Debug/net6.0/RSPack.pdb
+/Users/ngoedde/Projects/playground/rspack/RSPack/obj/Debug/net6.0/ref/RSPack.dll

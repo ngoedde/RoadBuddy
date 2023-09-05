@@ -1,0 +1,12 @@
+/Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Library/RB.Game/bin/Debug/net7.0/RB.Game.deps.json
+/Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Library/RB.Game/bin/Debug/net7.0/RB.Game.dll
+/Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Library/RB.Game/bin/Debug/net7.0/RB.Game.pdb
+/Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Library/RB.Game/obj/Debug/net7.0/RB.Game.csproj.AssemblyReference.cache
+/Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Library/RB.Game/obj/Debug/net7.0/RB.Game.GeneratedMSBuildEditorConfig.editorconfig
+/Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Library/RB.Game/obj/Debug/net7.0/RB.Game.AssemblyInfoInputs.cache
+/Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Library/RB.Game/obj/Debug/net7.0/RB.Game.AssemblyInfo.cs
+/Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Library/RB.Game/obj/Debug/net7.0/RB.Game.csproj.CoreCompileInputs.cache
+/Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Library/RB.Game/obj/Debug/net7.0/RB.Game.dll
+/Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Library/RB.Game/obj/Debug/net7.0/refint/RB.Game.dll
+/Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Library/RB.Game/obj/Debug/net7.0/RB.Game.pdb
+/Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Library/RB.Game/obj/Debug/net7.0/ref/RB.Game.dll

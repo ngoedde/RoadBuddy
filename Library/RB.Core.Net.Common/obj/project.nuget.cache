@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "zL3nmaD6AC6jkQ1FlzozbOD/B0euYQlVEGxUX8+A0BIU6Vg5UiJcwWHBlJ7G3gK8fKLqPa4DcRxAkdoHFjaZ7g==",
+  "success": true,
+  "projectFilePath": "/Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Library/RB.Core.Net.Common/RB.Core.Net.Common.csproj",
+  "expectedPackageFiles": [
+    "/Users/ngoedde/.nuget/packages/microsoft.extensions.objectpool/7.0.4/microsoft.extensions.objectpool.7.0.4.nupkg.sha512"
+  ],
+  "logs": []
+}

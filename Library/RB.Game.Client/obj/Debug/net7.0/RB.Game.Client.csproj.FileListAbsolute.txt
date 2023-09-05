@@ -1,0 +1,16 @@
+/Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Library/RB.Game.Client/bin/Debug/net7.0/Config/FileSystem.json
+/Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Library/RB.Game.Client/bin/Debug/net7.0/RB.Game.Client.deps.json
+/Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Library/RB.Game.Client/bin/Debug/net7.0/RB.Game.Client.dll
+/Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Library/RB.Game.Client/bin/Debug/net7.0/RB.Game.Client.pdb
+/Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Library/RB.Game.Client/bin/Debug/net7.0/RB.Core.FileSystem.dll
+/Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Library/RB.Game.Client/bin/Debug/net7.0/RB.Core.FileSystem.pdb
+/Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Library/RB.Game.Client/obj/Debug/net7.0/RB.Game.Client.csproj.AssemblyReference.cache
+/Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Library/RB.Game.Client/obj/Debug/net7.0/RB.Game.Client.GeneratedMSBuildEditorConfig.editorconfig
+/Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Library/RB.Game.Client/obj/Debug/net7.0/RB.Game.Client.AssemblyInfoInputs.cache
+/Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Library/RB.Game.Client/obj/Debug/net7.0/RB.Game.Client.AssemblyInfo.cs
+/Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Library/RB.Game.Client/obj/Debug/net7.0/RB.Game.Client.csproj.CoreCompileInputs.cache
+/Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Library/RB.Game.Client/obj/Debug/net7.0/RB.Game.Client.csproj.CopyComplete
+/Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Library/RB.Game.Client/obj/Debug/net7.0/RB.Game.Client.dll
+/Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Library/RB.Game.Client/obj/Debug/net7.0/refint/RB.Game.Client.dll
+/Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Library/RB.Game.Client/obj/Debug/net7.0/RB.Game.Client.pdb
+/Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Library/RB.Game.Client/obj/Debug/net7.0/ref/RB.Game.Client.dll

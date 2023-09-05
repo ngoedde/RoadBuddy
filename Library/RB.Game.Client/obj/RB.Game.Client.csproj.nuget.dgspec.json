@@ -1,0 +1,138 @@
+{
+  "format": 1,
+  "restore": {
+    "/Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Library/RB.Game.Client/RB.Game.Client.csproj": {}
+  },
+  "projects": {
+    "/Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Library/RB.Core.FileSystem/RB.Core.FileSystem.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Library/RB.Core.FileSystem/RB.Core.FileSystem.csproj",
+        "projectName": "RB.Core.FileSystem",
+        "projectPath": "/Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Library/RB.Core.FileSystem/RB.Core.FileSystem.csproj",
+        "packagesPath": "/Users/ngoedde/.nuget/packages/",
+        "outputPath": "/Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Library/RB.Core.FileSystem/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/Users/ngoedde/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net7.0"
+        ],
+        "sources": {
+          "/usr/local/share/dotnet/library-packs": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net7.0": {
+            "targetAlias": "net7.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net7.0": {
+          "targetAlias": "net7.0",
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/7.0.203/RuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "/Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Library/RB.Game.Client/RB.Game.Client.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Library/RB.Game.Client/RB.Game.Client.csproj",
+        "projectName": "RB.Game.Client",
+        "projectPath": "/Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Library/RB.Game.Client/RB.Game.Client.csproj",
+        "packagesPath": "/Users/ngoedde/.nuget/packages/",
+        "outputPath": "/Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Library/RB.Game.Client/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/Users/ngoedde/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net7.0"
+        ],
+        "sources": {
+          "/usr/local/share/dotnet/library-packs": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net7.0": {
+            "targetAlias": "net7.0",
+            "projectReferences": {
+              "/Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Library/RB.Core.FileSystem/RB.Core.FileSystem.csproj": {
+                "projectPath": "/Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Library/RB.Core.FileSystem/RB.Core.FileSystem.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net7.0": {
+          "targetAlias": "net7.0",
+          "dependencies": {
+            "Microsoft.Extensions.Configuration": {
+              "target": "Package",
+              "version": "[7.0.0, )"
+            },
+            "Microsoft.Extensions.Configuration.Binder": {
+              "target": "Package",
+              "version": "[7.0.4, )"
+            },
+            "Microsoft.Extensions.DependencyInjection.Abstractions": {
+              "target": "Package",
+              "version": "[7.0.0, )"
+            },
+            "Microsoft.Extensions.Options": {
+              "target": "Package",
+              "version": "[7.0.1, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/7.0.203/RuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}

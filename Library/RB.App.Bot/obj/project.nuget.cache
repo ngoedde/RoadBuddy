@@ -1,0 +1,16 @@
+{
+  "version": 2,
+  "dgSpecHash": "BPiEHr47LyRtz5se9MvabHp2kcbNGh7K9sL2e7eYgFLjDdgC6z4waSWOib3WKypRc9b0GnNHOhW1yWNfCiCSeQ==",
+  "success": true,
+  "projectFilePath": "/Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Library/RB.App.Bot/RB.App.Bot.csproj",
+  "expectedPackageFiles": [
+    "/Users/ngoedde/.nuget/packages/microsoft.extensions.configuration/7.0.0/microsoft.extensions.configuration.7.0.0.nupkg.sha512",
+    "/Users/ngoedde/.nuget/packages/microsoft.extensions.configuration.abstractions/7.0.0/microsoft.extensions.configuration.abstractions.7.0.0.nupkg.sha512",
+    "/Users/ngoedde/.nuget/packages/microsoft.extensions.configuration.binder/7.0.4/microsoft.extensions.configuration.binder.7.0.4.nupkg.sha512",
+    "/Users/ngoedde/.nuget/packages/microsoft.extensions.dependencyinjection.abstractions/7.0.0/microsoft.extensions.dependencyinjection.abstractions.7.0.0.nupkg.sha512",
+    "/Users/ngoedde/.nuget/packages/microsoft.extensions.objectpool/7.0.4/microsoft.extensions.objectpool.7.0.4.nupkg.sha512",
+    "/Users/ngoedde/.nuget/packages/microsoft.extensions.options/7.0.1/microsoft.extensions.options.7.0.1.nupkg.sha512",
+    "/Users/ngoedde/.nuget/packages/microsoft.extensions.primitives/7.0.0/microsoft.extensions.primitives.7.0.0.nupkg.sha512"
+  ],
+  "logs": []
+}
