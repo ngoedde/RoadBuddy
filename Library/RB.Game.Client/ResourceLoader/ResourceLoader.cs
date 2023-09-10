@@ -11,27 +11,34 @@ public abstract class ResourceLoader<TResult, TExpectedVal> : ILoader<TResult, T
         _clientFileSystem = clientFileSystem;
     }
 
-    public delegate void LoadEvent(TResult result);
-    public event LoadEvent? Loaded;
+    public delegate void LoadEventHandler(TResult result);
+    public event LoadEventHandler? Loaded;
 
-    public delegate void LoadingEvent(string path);
-    public event LoadingEvent? Loading;
+    public delegate void LoadingEventHandler(string path);
+    public event LoadingEventHandler? Loading;
 
     public virtual bool TryLoad(string path, out TResult result)
     {
         throw new NotImplementedException();
     }
 
-    protected virtual void OnLoaded(TResult result)
+    protected void OnLoaded(TResult result)
     {
         Loaded?.Invoke(result);
     }
 
-    protected virtual void OnLoading(string path)
+    protected void OnLoading(string path)
     {
         Loading?.Invoke(path);
     }
 
-    protected virtual IFileReader ReadFileFromMedia(string path) => _clientFileSystem.Media.OpenRead(path);
-    protected virtual IFileReader ReadFileFromData(string path) => _clientFileSystem.Data.OpenRead(path);
+    protected virtual IFileReader ReadFileFromMedia(string path)
+    {
+        //ToDo: A little hack to support lowercase/uppercase files. 
+        if (!_clientFileSystem.Media.FileExists(path))
+            path = path.ToLower();
+        
+        return _clientFileSystem.Media.OpenRead(path);
+    }
+    // protected virtual IFileReader ReadFileFromData(string path) => _clientFileSystem.Data.OpenRead(path);
 }

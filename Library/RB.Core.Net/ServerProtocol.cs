@@ -23,7 +23,7 @@ public class ServerProtocol : Protocol
     {
         _context.Options = ProtocolOptions.Encryption | ProtocolOptions.ErrorDetection | ProtocolOptions.KeyExchange;
 
-        using var msg = _allocator.NewMsg(NetMsgID.NET_KEYEXCHANGE_REQ, receiverId);
+        using var msg = _allocator.NewMsg(NetMsgId.NetKeyExchangeReq, receiverId);
         msg.TryWrite(_context.Options);
 
         if ((_context.Options & ProtocolOptions.Encryption) != 0)

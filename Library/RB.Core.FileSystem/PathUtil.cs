@@ -13,10 +13,13 @@ public static class PathUtil
     {
         if (path == null)
             return string.Empty;
-        
-        var fileName = GetFileName(path);
 
-        return new string(path[..^fileName.Length]).Trim(PathSeparator);
+        path = Prepare(path);
+        
+        var paths = path.Split(PathSeparator);
+        var pathsWithoutLast = paths[..^1];
+
+        return string.Join(PathSeparator, pathsWithoutLast);
     }
 
     /// <summary>
@@ -26,18 +29,37 @@ public static class PathUtil
     /// <returns>The file name.</returns>
     public static string GetFileName(string path)
     {
+        path = Prepare(path);
+        
         return string.IsNullOrEmpty(path) ? string.Empty : path.Split(PathSeparator).Last();
     }
 
     /// <summary>
-    /// Ensures that the given path ends with a path separator.
+    /// Appends the given folder or filename to the path. 
+    /// </summary>
+    /// <param name="path"></param>
+    /// <param name="folderOrFileName"></param>
+    /// <returns></returns>
+    public static string Append(string path, string folderOrFileName)
+    {
+        if (!string.IsNullOrEmpty(path))
+            path = Prepare(path);
+
+        return path + folderOrFileName;
+    }
+
+    /// <summary>
+    /// Returns a ready to use path string.
     /// </summary>
     /// <param name="path"></param>
     /// <returns></returns>
-    public static string EndingPathSeparator(string path)
+    public static string Prepare(string path)
     {
-        if (path.Last() != PathSeparator)
-            return path + PathSeparator;
+        if (path.StartsWith(PathSeparator))
+            path = path.Substring(1, path.Length - 1);
+
+        if (path.EndsWith(PathSeparator))
+            path = path[..^1];
 
         return path;
     }

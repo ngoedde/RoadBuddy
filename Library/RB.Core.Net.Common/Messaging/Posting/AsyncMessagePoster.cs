@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Threading.Channels;
 using RB.Core.Net.Common.Messaging.Handling;
+using Serilog;
 
 namespace RB.Core.Net.Common.Messaging.Posting;
 
@@ -24,20 +25,20 @@ public class AsyncMessagePoster : IAsyncMessagePoster
     {
         if (msg.ID == MessageID.Empty)
         {
-            Console.WriteLine($"{nameof(this.PostMsgAsync)}: Invalid ID");
+            Log.Warning($"{nameof(this.PostMsgAsync)}: Invalid ID");
             return ValueTask.FromResult(false);
         }
 
         const int MSG_TARGET_INVALID = -1;
         if (msg.ReceiverID == MSG_TARGET_INVALID)
         {
-            Console.WriteLine($"{nameof(this.PostMsgAsync)}: Invalid ReceiverID");
+            Log.Warning($"{nameof(this.PostMsgAsync)}: Invalid ReceiverID");
             return ValueTask.FromResult(false);
         }
 
         if (msg.SenderID == MSG_TARGET_INVALID)
         {
-            Console.WriteLine($"{nameof(this.PostMsgAsync)}: Invalid SenderID");
+            Log.Warning($"{nameof(this.PostMsgAsync)}: Invalid SenderID");
             return ValueTask.FromResult(false);
         }
 

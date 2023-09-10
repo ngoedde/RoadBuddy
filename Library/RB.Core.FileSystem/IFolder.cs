@@ -15,6 +15,7 @@ public interface IFolder
     public DateTime CreationTime { get; }
     
     public DateTime ModifyTime { get; }
+    
     #endregion
 
     #region Methods
@@ -22,9 +23,6 @@ public interface IFolder
     public IFolder[] GetFolders();
     public IEnumerable<IFile> GetFiles();
     public string[] GetChildren();
-    public void Delete();
-    public void Move(string destinationPath);
-    public IFolder Copy(string destinationPath, bool recursive = true);
 
     #endregion
 }

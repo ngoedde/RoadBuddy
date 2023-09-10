@@ -4,13 +4,13 @@ namespace RB.Game.Client.Objects;
 
 public class DivisionInfo
 {
-    public byte Locale { get; }
+    public byte ContentId { get; }
     
     public Division[] Divisions { get; }
 
-    public DivisionInfo(byte locale, Division[] divisions)
+    public DivisionInfo(byte contentId, Division[] divisions)
     {
-        Locale = locale;
+        ContentId = contentId;
         Divisions = divisions;
     }
 }

@@ -4,12 +4,15 @@ using RB.Core.FileSystem.IO;
 using RB.Core.FileSystem.PackFile.Component;
 using RB.Core.FileSystem.PackFile.Cryptography;
 using RB.Core.FileSystem.PackFile.Struct;
+using Serilog;
 
 namespace RB.Core.FileSystem.PackFile;
 
 internal class PackReader
 {
     private Blowfish? _blowfish;
+    private BsReader _reader;
+    private PackResolver _resolver;
 
     public PackArchive Read(Stream fileStream, Blowfish? blowfish = null, char pathSeparator = '\\')
     {
@@ -17,8 +20,10 @@ internal class PackReader
 
         _blowfish = blowfish;
 
-        var reader = new BsReader(fileStream);
-        var header = ReadHeader(reader);
+        PackHeader header;
+        _reader = new BsReader(fileStream);
+
+        header = ReadHeader(_reader);
 
         //Check decryption key
         if (_blowfish != null && header.Encrypted == 0x01)
@@ -32,12 +37,12 @@ internal class PackReader
                 throw new IOException("Failed to open JoymaxPackFile: The password or salt is wrong.");
         }
 
-        var blocks = ReadBlocksAt(reader, 256, 0);
         sw.Stop();
+        Log.Debug($"Reading pack file took {sw.ElapsedMilliseconds}ms");
 
-        Debug.WriteLine($"Reading pack file took {sw.ElapsedMilliseconds}ms");
-
-        return new PackArchive(header, blocks.ToArray(), blowfish, pathSeparator);
+        _resolver = new PackResolver(this, pathSeparator);
+        
+        return new PackArchive(header, blowfish, _resolver, pathSeparator);
     }
 
     public PackHeader ReadHeader(BinaryReader reader)
@@ -54,53 +59,46 @@ internal class PackReader
         return result;
     }
 
-    public IEnumerable<PackBlock> ReadBlocksAt(BinaryReader reader, long position, int parentFolderId)
+    private PackBlock ReadBlockAt(long position)
     {
-        var result = new List<PackBlock>(256);
+        _reader.BaseStream.Position = position;
 
-        reader.BaseStream.Position = position;
-
-        var blockId = IdGenerator.NextBlockId();
         var block = new PackBlock
         {
-            Id = blockId,
             Position = position,
-            ParentFolderId = parentFolderId,
-            Entries = ReadEntries(reader, parentFolderId, blockId)
+            Entries = ReadEntries(_reader)
         };
 
+        return block;
+    }
+    
+    public IEnumerable<PackBlock> ReadBlocksAt(long position)
+    {
+        var result = new List<PackBlock>(16);
+        
+        var block = ReadBlockAt(position);
         result.Add(block);
 
         //Read next block
         if (block.Entries[19].NextBlock > 0)
-            result.AddRange(ReadBlocksAt(reader, block.Entries[19].NextBlock, parentFolderId));
-
-        //Read sub folder blocks
-        foreach (var subFolderEntry in block.Entries.Where(e => e.IsSubFolder() && !e.IsNavigator()))
-            result.AddRange(ReadBlocksAt(reader, subFolderEntry.DataPosition, subFolderEntry.Id));
+            result.AddRange(ReadBlocksAt(block.Entries[19].NextBlock));
 
         return result;
     }
 
-    private PackEntry[] ReadEntries(BinaryReader reader, int parentFolderId, int blockId)
+    private PackEntry[] ReadEntries(BinaryReader reader)
     {
         var result = new PackEntry[20];
 
+        var buffer = reader.ReadBytes(128 * result.Length);
+        var entryBuffer = _blowfish != null ? _blowfish.Decode(buffer) : buffer;
+        
+        using var entryReader = new BsReader(new MemoryStream(entryBuffer));
         //Read entries
         for (var iEntry = 0; iEntry < 20; iEntry++)
         {
-            var entryId = IdGenerator.NextEntryId();
-            var entryBuffer = reader.ReadBytes(128);
-
-            if (_blowfish != null)
-                entryBuffer = _blowfish.Decode(entryBuffer);
-
-            using var entryReader = new BsReader(new MemoryStream(entryBuffer));
             result[iEntry] = new PackEntry
             {
-                Id = entryId,
-                ParentFolderId = parentFolderId,
-                BlockId = blockId,
                 Type = (PackEntryType)entryReader.ReadByte(),
                 Name = entryReader.ReadString(89).Trim('\0'),
                 CreationTime = DateTime.FromFileTimeUtc(entryReader.ReadInt64()),

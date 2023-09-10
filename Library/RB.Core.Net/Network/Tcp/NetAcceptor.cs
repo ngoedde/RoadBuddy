@@ -3,6 +3,7 @@
 using System.Net.Sockets;
 using RB.Core.Net.Network.Memory;
 using RB.Core.Net.Network.Memory.EventArgs;
+using Serilog;
 
 namespace RB.Core.Net.Network.Tcp;
 
@@ -30,7 +31,7 @@ internal class NetAcceptor : NetIOHandler, INetAcceptor
         _listenerSocket.Bind(NetHelper.ToIPEndPoint(hostOrIP, port));
         _listenerSocket.Listen(128); // TODO: From config
 
-        Console.WriteLine($"Listening on {hostOrIP}:{port}");
+        Log.Information($"Listening on {hostOrIP}:{port}");
 
         this.Accept();
     }

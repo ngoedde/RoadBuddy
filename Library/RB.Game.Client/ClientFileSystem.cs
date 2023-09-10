@@ -8,8 +8,8 @@ public class ClientFileSystem : IClientFileSystem
 {
     public ClientFileSystem(IOptions<FileSystemConfig> config)
     {
-        Media = new PackFileSystem(config.Value.Media.Path, config.Value.Media.Key, true);
-        Data = new PackFileSystem(config.Value.Data.Path, config.Value.Data.Key, true);
+        Media = new PackFileSystem(config.Value.Media.Path, config.Value.Media.Key);
+        Data = new PackFileSystem(config.Value.Data.Path, config.Value.Data.Key);
     }
 
     public IFileSystem Data { get; }

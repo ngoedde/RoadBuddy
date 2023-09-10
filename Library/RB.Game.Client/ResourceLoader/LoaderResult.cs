@@ -1,6 +1,6 @@
 namespace RB.Game.Client.ResourceLoader;
 
-public abstract class LoaderResult<TExpected> : ILoaderResult<TExpected>
+public abstract class LoaderResult<TExpected>
 {
     public bool Success { get; }
     

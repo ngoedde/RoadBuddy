@@ -49,24 +49,6 @@ public class PackFolder : IFolder
         return FileSystem.GetChildren(Path);
     }
 
-    /// <inheritdoc />
-    public void Delete()
-    {
-        FileSystem.Delete(Path);
-    }
-
-    /// <inheritdoc />
-    public void Move(string destinationPath)
-    {
-        FileSystem.Move(Path, destinationPath);
-    }
-
-    /// <inheritdoc />
-    public IFolder Copy(string destinationPath, bool recursive = true)
-    {
-        return FileSystem.CopyFolder(Path, destinationPath, recursive);
-    }
-
     public override string ToString()
     {
         return Path;

@@ -16,7 +16,7 @@ public class ServerMessageDecoder : IMessageDecoder
 
     public DecodeResult Decode(IMessageEncodingContext context, Message msg)
     {
-        if (context.IsTrusted || msg.ID == NetMsgID.NET_FILE_IO)
+        if (context.IsTrusted || msg.ID == NetMsgId.NetFileIo)
             return DecodeResult.Success;
 
         var result = _decrypter.Decrypt(context, msg);

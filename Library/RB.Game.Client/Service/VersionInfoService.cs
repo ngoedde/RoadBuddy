@@ -6,28 +6,25 @@ namespace RB.Game.Client.Service;
 public class VersionInfoService : IVersionInfoService
 {
     private readonly IVersionInfoLoader _versionInfoLoader;
-    private int? _version;
+    private uint? _version;
 
     public VersionInfoService(IVersionInfoLoader versionInfoLoader)
     {
         _versionInfoLoader = versionInfoLoader;
     }
 
-    private bool Load()
+    public uint Load()
     {
         if (!_versionInfoLoader.TryLoad(out var clientVersionResult))
             throw new NotLoadedException(clientVersionResult.Path);
 
         _version = clientVersionResult.Value;
-
-        return true;
+        
+        return _version.Value;
     }
 
-    public int GetVersion()
+    public uint GetVersion()
     {
-        if (!_version.HasValue && !Load())
-            throw new NotLoadedException(IVersionInfoLoader.Path);
-
-        return _version!.Value;
+        return _version ?? Load();
     }
 }

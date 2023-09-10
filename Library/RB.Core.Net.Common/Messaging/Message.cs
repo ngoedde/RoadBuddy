@@ -2,8 +2,10 @@
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
+using RB.Core.Net.Common.Messaging.Allocation;
 using RB.Core.Net.Common.Messaging.Memory;
 using RB.Core.Net.Common.Threading;
+using Serilog;
 
 namespace RB.Core.Net.Common.Messaging;
 
@@ -284,6 +286,18 @@ public class Message : MessageStream
 
     public void Retain() => _referenceCounter.Retain();
     public void Release() => this.Dispose();
+    
+    public Message Clone(IMessageAllocator allocator)
+    {
+        var clone = allocator.NewMsg(this.CallerMemberName, this.CallerFilePath);
+        clone.ReceiverID = this.ReceiverID;
+        clone.SenderID = this.SenderID;
+        clone.WritePosition = this.WritePosition;
+        clone.ReadPosition = this.ReadPosition;
+        this.TryCopyTo(clone);
+
+        return clone;
+    }
 
     public override void Dispose()
     {
@@ -300,6 +314,6 @@ public class Message : MessageStream
         if (Environment.HasShutdownStarted)
             return;
 
-        Console.WriteLine($"Message was leaked. Created in {this.CallerMemberName}\n({this.CallerFilePath}:{this.CallerFileLine})");
+        Log.Warning($"Message was leaked. Created in {this.CallerMemberName}\n({this.CallerFilePath}:{this.CallerFileLine})");
     }
 }

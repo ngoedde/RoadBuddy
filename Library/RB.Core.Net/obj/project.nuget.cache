@@ -1,10 +1,11 @@
 {
   "version": 2,
-  "dgSpecHash": "+Q6UOOpC05i+4DiQhegET7qQggPPKWGkRlU9Ed5eQDmyaQkicqPk9oajqUkWiSeAs5oo8HwkUfXFtIG/rDE72g==",
+  "dgSpecHash": "a39UeKuCZFZAHuP+rf0B8OsjxNnwWhCW17q1csbwlG54ozAhmjqCi0XcMbwxMatymvwsGqefPOE79HhpDpSmRg==",
   "success": true,
   "projectFilePath": "/Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Library/RB.Core.Net/RB.Core.Net.csproj",
   "expectedPackageFiles": [
-    "/Users/ngoedde/.nuget/packages/microsoft.extensions.objectpool/7.0.4/microsoft.extensions.objectpool.7.0.4.nupkg.sha512"
+    "/Users/ngoedde/.nuget/packages/microsoft.extensions.objectpool/7.0.4/microsoft.extensions.objectpool.7.0.4.nupkg.sha512",
+    "/Users/ngoedde/.nuget/packages/serilog/3.0.1/serilog.3.0.1.nupkg.sha512"
   ],
   "logs": []
 }

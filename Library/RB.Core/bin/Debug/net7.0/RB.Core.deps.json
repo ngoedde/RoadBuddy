@@ -9,10 +9,12 @@
       "RB.Core/1.0.0": {
         "dependencies": {
           "Microsoft.Extensions.DependencyInjection.Abstractions": "7.0.0",
+          "RB.Bot": "1.0.0",
           "RB.Core.Net": "1.0.0",
           "RB.Core.Net.Common": "1.0.0",
           "RB.Game": "1.0.0",
-          "RB.Game.Client": "1.0.0"
+          "RB.Game.Client": "1.0.0",
+          "Serilog": "3.0.1"
         },
         "runtime": {
           "RB.Core.dll": {}
@@ -88,14 +90,31 @@
           }
         }
       },
+      "Serilog/3.0.1": {
+        "runtime": {
+          "lib/net7.0/Serilog.dll": {
+            "assemblyVersion": "2.0.0.0",
+            "fileVersion": "3.0.1.0"
+          }
+        }
+      },
+      "RB.Bot/1.0.0": {
+        "runtime": {
+          "RB.Bot.dll": {}
+        }
+      },
       "RB.Core.FileSystem/1.0.0": {
+        "dependencies": {
+          "Serilog": "3.0.1"
+        },
         "runtime": {
           "RB.Core.FileSystem.dll": {}
         }
       },
       "RB.Core.Net/1.0.0": {
         "dependencies": {
-          "RB.Core.Net.Common": "1.0.0"
+          "RB.Core.Net.Common": "1.0.0",
+          "Serilog": "3.0.1"
         },
         "runtime": {
           "RB.Core.Net.dll": {}
@@ -103,13 +122,17 @@
       },
       "RB.Core.Net.Common/1.0.0": {
         "dependencies": {
-          "Microsoft.Extensions.ObjectPool": "7.0.4"
+          "Microsoft.Extensions.ObjectPool": "7.0.4",
+          "Serilog": "3.0.1"
         },
         "runtime": {
           "RB.Core.Net.Common.dll": {}
         }
       },
       "RB.Game/1.0.0": {
+        "dependencies": {
+          "Serilog": "3.0.1"
+        },
         "runtime": {
           "RB.Game.dll": {}
         }
@@ -120,7 +143,8 @@
           "Microsoft.Extensions.Configuration.Binder": "7.0.4",
           "Microsoft.Extensions.DependencyInjection.Abstractions": "7.0.0",
           "Microsoft.Extensions.Options": "7.0.1",
-          "RB.Core.FileSystem": "1.0.0"
+          "RB.Core.FileSystem": "1.0.0",
+          "Serilog": "3.0.1"
         },
         "runtime": {
           "RB.Game.Client.dll": {}
@@ -182,6 +206,18 @@
       "sha512": "sha512-um1KU5kxcRp3CNuI8o/GrZtD4AIOXDk+RLsytjZ9QPok3ttLUelLKpilVPuaFT3TFjOhSibUAso0odbOaCDj3Q==",
       "path": "microsoft.extensions.primitives/7.0.0",
       "hashPath": "microsoft.extensions.primitives.7.0.0.nupkg.sha512"
+    },
+    "Serilog/3.0.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-E4UmOQ++eNJax1laE+lws7E3zbhKgHsGJbO7ra0yE5smUh+5FfUPIKKBxM3MO1tK4sgpQke6/pLReDxIc/ggNw==",
+      "path": "serilog/3.0.1",
+      "hashPath": "serilog.3.0.1.nupkg.sha512"
+    },
+    "RB.Bot/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
     },
     "RB.Core.FileSystem/1.0.0": {
       "type": "project",

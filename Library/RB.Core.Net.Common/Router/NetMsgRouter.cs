@@ -16,7 +16,7 @@ public class NetMsgRouter : INetMsgRouter
 
     public bool PostLocalNetConnected(int id)
     {
-        using var msg = _alloctor.NewLocalMsg(NetMsgID.LOCAL_NET_CONNECTED);
+        using var msg = _alloctor.NewLocalMsg(NetMsgId.LocalNetConnected);
         if (!msg.TryWrite(id)) return false;
 
         return _poster.PostMsg(msg);
@@ -24,7 +24,7 @@ public class NetMsgRouter : INetMsgRouter
 
     public bool PostLocalNetDisconnected(int id, DisconnectReason reason)
     {
-        using var msg = _alloctor.NewLocalMsg(NetMsgID.LOCAL_NET_DISCONNECTED);
+        using var msg = _alloctor.NewLocalMsg(NetMsgId.LocalNetDisconnected);
         if (!msg.TryWrite(id)) return false;
         if (!msg.TryWrite(reason)) return false;
 
@@ -33,7 +33,7 @@ public class NetMsgRouter : INetMsgRouter
 
     public bool PostLocalNetKeyExchanged(int id)
     {
-        using var msg = _alloctor.NewLocalMsg(NetMsgID.LOCAL_NET_KEYEXCHANGED);
+        using var msg = _alloctor.NewLocalMsg(NetMsgId.LocalNetKeyExchanged);
         if (!msg.TryWrite(id)) return false;
 
         return _poster.PostMsg(msg);

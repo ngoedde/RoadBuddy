@@ -16,7 +16,7 @@ public class ClientMessageEncoder : IMessageEncoder
 
     public EncodeResult Encode(IMessageEncodingContext context, Message msg)
     {
-        if (context.IsTrusted || msg.ID == NetMsgID.NET_FILE_IO)
+        if (context.IsTrusted || msg.ID == NetMsgId.NetFileIo)
             return EncodeResult.Success;
 
         if ((context.Options & ProtocolOptions.ErrorDetection) != 0)

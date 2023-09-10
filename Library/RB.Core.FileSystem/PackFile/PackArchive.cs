@@ -1,12 +1,10 @@
-using RB.Core.FileSystem.PackFile.Component;
 using RB.Core.FileSystem.PackFile.Cryptography;
 using RB.Core.FileSystem.PackFile.Struct;
 
 namespace RB.Core.FileSystem.PackFile;
 
-public class PackArchive
+internal class PackArchive
 {
-    public const int ShadowRootId = 0;
     public const string ShadowRootName = "";
     public const string ShadowRootPath = "";
 
@@ -22,15 +20,6 @@ public class PackArchive
     /// </summary>
     public PackHeader Header { get; }
 
-    /// <summary>
-    ///     Gets the collection of blocks in this pack file.
-    /// </summary>
-    public PackBlock[] Blocks { get; private set; }
-
-    /// <summary>
-    ///     Gets the lookup table for this pack file.
-    /// </summary>
-    public PackFileLookupTable LookupTable { get; }
 
     /// <summary>
     ///     Gets the cryptographic blowfish for this pack file.
@@ -40,101 +29,85 @@ public class PackArchive
 
     #endregion
 
+    private readonly PackResolver _packResolver;
+
     /// <summary>
     ///     Creates a new instance of <see cref="PackArchive" />
     /// </summary>
     /// <param name="header">The header of the pack file.</param>
-    /// <param name="blocks">The collection of blocks in the pack file.</param>
     /// <param name="blowfish">The cryptographic blowfish for this pack file or null if the file is not encrypted.</param>
+    /// <param name="resolver"></param>
     /// <param name="pathSeparator">The character to determine path separation.</param>
-    public PackArchive(PackHeader header, PackBlock[] blocks, Blowfish? blowfish, char pathSeparator = '\\')
+    public PackArchive(PackHeader header, Blowfish? blowfish, PackResolver resolver, char pathSeparator = '\\')
     {
         Header = header;
-        Blocks = blocks;
-        LookupTable = new PackFileLookupTable(this);
         Blowfish = blowfish;
         PathSeparator = pathSeparator;
 
-        CreateIndex();
+        _packResolver = resolver;
     }
 
     #region Methods
 
     /// <summary>
-    ///     Returns an entry
+    ///     Returns a pack block by its path.
     /// </summary>
-    /// <param name="id"></param>
-    /// <returns></returns>
-    public PackEntry? GetEntry(int id)
-    {
-        if (id == ShadowRootId)
-            return GetShadowRoot();
-
-        return Blocks.SelectMany(block => block.Entries).FirstOrDefault(entry => entry.Id == id);
-    }
-
-    /// <summary>
-    ///     Returns a pack entry by its path.
-    /// </summary>
-    /// <param name="path">The path to the pack entry.</param>
-    /// <returns>The found pack entry or null if the path does not exist.</returns>
+    /// <param name="path">The path to the pack block.</param>
+    /// <returns>The found pack block or null if the path does not exist.</returns>
     public PackEntry? GetEntry(string path)
     {
         if (path is ShadowRootPath or null)
             return GetShadowRoot();
 
-        if (!LookupTable.ContainsKey(path))
-            return null;
-
-        var entryId = LookupTable[path];
-
-        return GetEntry(entryId);
+        return _packResolver.ResolveFile(path);
     }
 
-    /// <summary>
-    ///     Lookups up the given path and returns the entry including the entries block.
-    /// </summary>
-    /// <param name="path">The path of the entry to lookup.</param>
-    /// <param name="entry">The found entry or null if the entry does not exist.</param>
-    /// <param name="block">The found block or null if the block does not exist</param>
-    /// <returns>True if the entry and block both exist. False if the entry or block doesn't exist.</returns>
-    public bool TryGetEntryWithBlock(string path, out PackEntry? entry, out PackBlock? block)
+    public IEnumerable<PackBlock> GetBlock(string path)
     {
-        block = null;
-        entry = GetEntry(path);
+        if (path is ShadowRootPath or null)
+            return _packResolver.Root;
 
-        if (entry == null)
-            return false;
-
-        block = GetBlock(entry.BlockId);
-
-        return block != null;
+        return _packResolver.ResolveBlock(path);
     }
 
     /// <summary>
-    ///     Returns the pack block with the given id or null if the block does not exist.
+    ///     
     /// </summary>
-    /// <param name="id">The identifier of the block to lookup.</param>
-    /// <returns>The pack block or null if the block does not exist.</returns>
-    public PackBlock? GetBlock(int id)
-    {
-        if (id == ShadowRootId)
-            return Blocks[0];
-
-        return Blocks.FirstOrDefault(b => b.Id == id);
-    }
-
-    /// <summary>
-    ///     Returns a collection of child entries for the given parent identifier.
-    /// </summary>
-    /// <param name="parentId">The identifier of the parent folder entry.</param>
+    /// <param name="path"></param>
+    /// <param name="entry"></param>
     /// <returns></returns>
-    public IEnumerable<PackEntry> GetEntries(int parentId)
+    public bool TryGetEntry(string path, out PackEntry? entry)
     {
-        return Blocks.SelectMany(block =>
-            block.Entries.Where(e => e.ParentFolderId == parentId && e.Type != PackEntryType.Nop));
+        try
+        {
+            entry = GetEntry(path);
+            
+            return true;
+        }
+        catch (Exception e)
+        {
+            entry = null;
+            
+            return false;
+        }
     }
 
+    public bool TryGetBlock(string path, out IEnumerable<PackBlock>? block)
+    {
+        try
+        {
+            block = GetBlock(path);
+            
+            return true;
+        }
+        catch (Exception e)
+        {
+            block = null;
+
+            return false;
+        }
+    }
+    
     /// <summary>
     ///     Returns a collection of child entries for the given path.
     /// </summary>
@@ -143,76 +116,27 @@ public class PackArchive
     public IEnumerable<PackEntry> GetEntries(string path)
     {
         var entry = GetEntry(path);
+        if (entry == null)
+            return Array.Empty<PackEntry>();
+        
+        var block = _packResolver.ResolveBlock(path);
 
-        return entry == null ? Array.Empty<PackEntry>() : GetEntries(entry.Id);
+        return block == null ? Array.Empty<PackEntry>() : block.GetEntries();
     }
 
     /// <summary>
-    ///     Returns the first block that points to the given position inside the pack file.
-    /// </summary>
-    /// <param name="position">The position of the block inside the pack file.</param>
-    /// <returns>The block at the position or null if there is not block at the given position</returns>
-    public PackBlock? GetBlockAt(long position)
-    {
-        return Blocks.FirstOrDefault(b => b.Position == position);
-    }
-
-    /// <summary>
-    ///     Adds a new block to this pack archive.
-    /// </summary>
-    /// <param name="block">The block to add.</param>
-    public void AddBlock(PackBlock block)
-    {
-        var newBlockData = new PackBlock[Blocks.Length + 1]; //+1 for the new block
-        Blocks.CopyTo(newBlockData, 0);
-
-        newBlockData[Blocks.Length] = block;
-
-        Blocks = newBlockData;
-    }
-
-    /// <summary>
-    ///     Adds or updates a block in this pack archive.
-    /// </summary>
-    /// <param name="updatedBlock">The pack block that should be created or updated.</param>
-    public void AddOrUpdateBlock(PackBlock updatedBlock)
-    {
-        var blockIndex = Array.FindIndex(Blocks, b => b.Id == updatedBlock.Id);
-
-        if (blockIndex == -1)
-        {
-            AddBlock(updatedBlock);
-
-            return;
-        }
-
-        Blocks[blockIndex] = updatedBlock;
-    }
-
-    /// <summary>
-    ///     Refreshes the current file lookup table.
-    /// </summary>
-    public void CreateIndex()
-    {
-        LookupTable.CreateLookupTable();
-    }
-
-    /// <summary>
-    ///     Returns the default shadow root entry. The entry points to the root block at position 256.
+    ///     Returns the default shadow root block. The block points to the root block at position 256.
     /// </summary>
     /// <returns></returns>
     private PackEntry GetShadowRoot()
     {
         return new PackEntry
         {
-            BlockId = Blocks[0].Id,
             CreationTime = DateTime.Now,
             DataPosition = 256,
-            Id = ShadowRootId,
             ModifyTime = DateTime.Now,
             Name = ShadowRootName,
             NextBlock = 0,
-            ParentFolderId = 0,
             Payload = new byte[2],
             Size = 0,
             Type = PackEntryType.Folder

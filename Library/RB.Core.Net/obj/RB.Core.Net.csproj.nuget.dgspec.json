@@ -42,6 +42,10 @@
             "Microsoft.Extensions.ObjectPool": {
               "target": "Package",
               "version": "[7.0.4, )"
+            },
+            "Serilog": {
+              "target": "Package",
+              "version": "[3.0.1, )"
             }
           },
           "imports": [
@@ -102,6 +106,12 @@
       "frameworks": {
         "net7.0": {
           "targetAlias": "net7.0",
+          "dependencies": {
+            "Serilog": {
+              "target": "Package",
+              "version": "[3.0.1, )"
+            }
+          },
           "imports": [
             "net461",
             "net462",

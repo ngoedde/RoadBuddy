@@ -65,7 +65,7 @@ public abstract class Protocol : IProtocol
 
     public bool PostKeyChallenge(int receiverId, uint localPublic, Span<byte> localSignature)
     {
-        using var msg = _allocator.NewMsg(NetMsgID.NET_KEYEXCHANGE_REQ, receiverId);
+        using var msg = _allocator.NewMsg(NetMsgId.NetKeyExchangeReq, receiverId);
         if (!msg.TryWrite(localPublic)) return false;
         if (!msg.TryWrite(localSignature)) return false;
 
@@ -74,7 +74,7 @@ public abstract class Protocol : IProtocol
 
     public bool PostKeyChallenge(int receiverId, Span<byte> localSignature)
     {
-        using var msg = _allocator.NewMsg(NetMsgID.NET_KEYEXCHANGE_REQ, receiverId);
+        using var msg = _allocator.NewMsg(NetMsgId.NetKeyExchangeReq, receiverId);
         if (!msg.TryWrite(ProtocolOptions.KeyChallenge)) return false;
         if (!msg.TryWrite(localSignature)) return false;
 
@@ -83,13 +83,14 @@ public abstract class Protocol : IProtocol
 
     public bool PostKeyAccepted(int receiverId)
     {
-        using var msg = _allocator.NewMsg(NetMsgID.NET_KEYEXCHANGE_ACK, receiverId);
+        using var msg = _allocator.NewMsg(NetMsgId.NetKeyExchangeAck, receiverId);
+
         return _poster.PostMsg(msg);
     }
 
     protected bool PostLocalKeyAccepted(int sessionId)
     {
-        using var msg = _allocator.NewLocalMsg(NetMsgID.LOCAL_NET_KEYEXCHANGED);
+        using var msg = _allocator.NewLocalMsg(NetMsgId.LocalNetKeyExchanged);
         if (!msg.TryWrite(sessionId)) return false;
 
         return _poster.PostMsg(msg);

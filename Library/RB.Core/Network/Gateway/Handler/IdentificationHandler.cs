@@ -1,28 +1,29 @@
+using Microsoft.Extensions.Options;
+using RB.Core.Config;
 using RB.Core.Net.Common;
 using RB.Core.Net.Common.Messaging;
 using RB.Core.Network.Exception;
+using RB.Core.Network.Gateway.Service;
 using RB.Game.Client.Service;
+using Serilog;
 
 namespace RB.Core.Network.Gateway.Handler;
 
 public class IdentificationHandler : IGatewayMsgHandler
 {
     private readonly IGatewayClient _gatewayClient;
-    private readonly IVersionInfoService _versionInfoService;
-    private readonly IDivisionInfoService _divisionInfoService;
+    private readonly PatchInfoService _patchInfoService;
 
     public IdentificationHandler(
-        IGatewayClient gatewayClient,
-        IVersionInfoService versionInfoService,
-        IDivisionInfoService divisionInfoService
+        IGatewayClient gatewayClient, 
+        PatchInfoService patchInfoService
     ) {
         _gatewayClient = gatewayClient;
-        _versionInfoService = versionInfoService;
-        _divisionInfoService = divisionInfoService;
-        _gatewayClient.SetMsgHandler(NetMsgID.SetupCordNoDir, OnSetupCord);
+        _patchInfoService = patchInfoService;
+        _gatewayClient.SetMsgHandler(NetMsgId.SetupCordNoDir, OnSetupCordSendPatchReq);
     }
 
-    private bool OnSetupCord(Message msg)
+    private bool OnSetupCordSendPatchReq(Message msg)
     {
         if (msg.SenderID == msg.ReceiverID)
             return true;
@@ -30,16 +31,10 @@ public class IdentificationHandler : IGatewayMsgHandler
         if (!msg.TryRead(out string identityName)) 
             return false;
 
-        if (identityName != GatewayClient.ExpectedIdentity)
-            throw new InvalidIdentityException();
+        if (identityName != NetIdentity.GatewayServer)
+            throw new InvalidIdentityException(NetIdentity.GatewayServer, identityName);
         
-        using var patchReq = _gatewayClient.NewMsg(GatewayMsgId.PatchInfoReq, msg.SenderID);
-        
-        patchReq.TryWrite(_divisionInfoService.GetDivisionInfo().Locale);
-        patchReq.TryWrite("SR_Client");
-        patchReq.TryWrite(_versionInfoService.GetVersion());
-            
-        // _gatewayClient.PostMsg(patchReq);
+        _patchInfoService.RequestPatchInfo();
         
         return true;
     }

@@ -27,31 +27,13 @@ public class PackFile : IFile
         Entry = entry;
     }
 
-
-    public void Move(string destinationPath)
-    {
-        FileSystem.Move(Path, destinationPath);
-    }
-
-    public IFile Copy(string destinationPath)
-    {
-        return FileSystem.CopyFile(Path, destinationPath);
-    }
-
-    public void Delete()
-    {
-        FileSystem.Delete(Path);
-    }
+    
 
     public IFileReader OpenRead()
     {
         return FileSystem.OpenRead(Path);
     }
-
-    public IFileWriter OpenWrite()
-    {
-        return FileSystem.OpenWrite(Path);
-    }
+    
 
     public override string ToString()
     {

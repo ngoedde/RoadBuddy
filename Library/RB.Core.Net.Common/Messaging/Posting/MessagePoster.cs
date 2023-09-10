@@ -1,4 +1,5 @@
 ﻿using RB.Core.Net.Common.Messaging.Pumping;
+using Serilog;
 
 namespace RB.Core.Net.Common.Messaging.Posting;
 
@@ -15,20 +16,20 @@ public class MessagePoster : IMessagePoster
     {
         if (msg.ID == MessageID.Empty)
         {
-            Console.WriteLine($"{nameof(this.PostMsg)}: Invalid ID");
+            Log.Warning($"{nameof(this.PostMsg)}: Invalid ID");
             return false;
         }
 
         const int MSG_TARGET_INVALID = -1;
         if (msg.ReceiverID == MSG_TARGET_INVALID)
         {
-            Console.WriteLine($"{nameof(this.PostMsg)}: Invalid ReceiverID");
+            Log.Warning($"{nameof(this.PostMsg)}: Invalid ReceiverID");
             return false;
         }
 
         if (msg.SenderID == MSG_TARGET_INVALID)
         {
-            Console.WriteLine($"{nameof(this.PostMsg)}: Invalid SenderID");
+            Log.Warning($"{nameof(this.PostMsg)}: Invalid SenderID");
             return false;
         }
 

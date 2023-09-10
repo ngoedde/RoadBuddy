@@ -29,7 +29,7 @@ public abstract class RoadBuddyApp : IRoadBuddyApp
     private UpdateCounter _variableCounter = new UpdateCounter();
     private TickRegulator _fixedRegulator = new TickRegulator(1.0f / TARGET_FIXED);
     private int _lastSpinCount;
-
+    private float _lastDeltaTime;
     
     protected RoadBuddyApp()
     {
@@ -94,7 +94,9 @@ public abstract class RoadBuddyApp : IRoadBuddyApp
 
     protected virtual void OnUpdate(float deltaTime)
     {
+        _lastDeltaTime = deltaTime;
         _variableTicks = _variableCounter.Update(deltaTime);
+
         Console.Title = $"{_title} [{_fixedTicks} UPS/s :: {TARGET_FIXED_TIME * UsToMs:0.000}ms] [FPS:{_variableTicks} :: {deltaTime * MsPerSecond:0.000}ms] (SpinCount = {_lastSpinCount})";
 
         if (!Console.IsInputRedirected && Console.KeyAvailable)
@@ -103,6 +105,12 @@ public abstract class RoadBuddyApp : IRoadBuddyApp
             if (key.Modifiers == ConsoleModifiers.Control && key.Key == ConsoleKey.C)
                 this.Close();
         }
+    }
+
+    public string GetMetrics()
+    {
+        return
+            $"[{_fixedTicks} UPS/s :: {TARGET_FIXED_TIME * UsToMs:0.000}ms] [FPS:{_variableTicks} :: {_lastDeltaTime * MsPerSecond:0.000}ms] (SpinCount = {_lastSpinCount})";
     }
 
     protected virtual void OnExit()

@@ -1,0 +1,12 @@
+/Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Library/RB.Bot/bin/Debug/net7.0/RB.Bot.deps.json
+/Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Library/RB.Bot/bin/Debug/net7.0/RB.Bot.dll
+/Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Library/RB.Bot/bin/Debug/net7.0/RB.Bot.pdb
+/Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Library/RB.Bot/obj/Debug/net7.0/RB.Bot.csproj.AssemblyReference.cache
+/Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Library/RB.Bot/obj/Debug/net7.0/RB.Bot.GeneratedMSBuildEditorConfig.editorconfig
+/Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Library/RB.Bot/obj/Debug/net7.0/RB.Bot.AssemblyInfoInputs.cache
+/Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Library/RB.Bot/obj/Debug/net7.0/RB.Bot.AssemblyInfo.cs
+/Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Library/RB.Bot/obj/Debug/net7.0/RB.Bot.csproj.CoreCompileInputs.cache
+/Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Library/RB.Bot/obj/Debug/net7.0/RB.Bot.dll
+/Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Library/RB.Bot/obj/Debug/net7.0/refint/RB.Bot.dll
+/Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Library/RB.Bot/obj/Debug/net7.0/RB.Bot.pdb
+/Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Library/RB.Bot/obj/Debug/net7.0/ref/RB.Bot.dll

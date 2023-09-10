@@ -6,7 +6,7 @@ namespace RB.Core.Net.Common.Messaging.Pumping;
 
 public class MessagePump : IMessagePump
 {
-    private readonly ConcurrentQueue<Message> _queue = new ConcurrentQueue<Message>();
+    private readonly ConcurrentQueue<Message> _queue = new();
 
     public void Enqueue(Message message) => _queue.Enqueue(message);
 

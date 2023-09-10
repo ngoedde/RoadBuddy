@@ -1,5 +1,7 @@
+using System.Diagnostics;
 using RB.Core.FileSystem.IO;
 using RB.Game.Client.Objects;
+using Serilog;
 
 namespace RB.Game.Client.ResourceLoader.DivisionInfo;
 
@@ -18,6 +20,7 @@ public class DivisionInfoLoader : ResourceLoader<DivisionInfoLoaderResult, Objec
     {
         try
         {
+            var sw = Stopwatch.StartNew();
             base.OnLoading(path);
    
             var buffer = ReadFileFromMedia(IDivisionInfoLoader.Path).GetStream();
@@ -27,6 +30,7 @@ public class DivisionInfoLoader : ResourceLoader<DivisionInfoLoaderResult, Objec
 
             base.OnLoaded(result);
             
+            Log.Debug($"Loaded resource [{path}] in {sw.ElapsedMilliseconds}ms");
             return true;
         }
         catch (Exception e)

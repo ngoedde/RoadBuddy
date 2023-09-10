@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "LOnyaEZitgX/5k8jCxYpbZyLS+x4f8wi7jeNOXCiUvATJ7pG05MFrfWzqJ1VEYO9oB93fcgTPL17OL7OHgbPOA==",
+  "dgSpecHash": "JjzAN7zdg7QOmFCLeMv4EPbf41xZDqmX3wtpQEXAozm8+kQq+YHqTeW4Vi1RarLj5Pkg/0M8nEELR3gzRLtS3A==",
   "success": true,
   "projectFilePath": "/Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Application/RB.CLI/RB.CLI.csproj",
   "expectedPackageFiles": [
@@ -18,6 +18,9 @@
     "/Users/ngoedde/.nuget/packages/microsoft.extensions.options/7.0.1/microsoft.extensions.options.7.0.1.nupkg.sha512",
     "/Users/ngoedde/.nuget/packages/microsoft.extensions.options.configurationextensions/7.0.0/microsoft.extensions.options.configurationextensions.7.0.0.nupkg.sha512",
     "/Users/ngoedde/.nuget/packages/microsoft.extensions.primitives/7.0.0/microsoft.extensions.primitives.7.0.0.nupkg.sha512",
+    "/Users/ngoedde/.nuget/packages/serilog/3.0.1/serilog.3.0.1.nupkg.sha512",
+    "/Users/ngoedde/.nuget/packages/serilog.sinks.console/4.1.0/serilog.sinks.console.4.1.0.nupkg.sha512",
+    "/Users/ngoedde/.nuget/packages/serilog.sinks.file/5.0.0/serilog.sinks.file.5.0.0.nupkg.sha512",
     "/Users/ngoedde/.nuget/packages/system.text.encodings.web/7.0.0/system.text.encodings.web.7.0.0.nupkg.sha512",
     "/Users/ngoedde/.nuget/packages/system.text.json/7.0.0/system.text.json.7.0.0.nupkg.sha512"
   ],

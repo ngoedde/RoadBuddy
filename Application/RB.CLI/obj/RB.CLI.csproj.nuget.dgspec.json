@@ -68,8 +68,74 @@
             "Microsoft.Extensions.Options.ConfigurationExtensions": {
               "target": "Package",
               "version": "[7.0.0, )"
+            },
+            "Serilog": {
+              "target": "Package",
+              "version": "[3.0.1, )"
+            },
+            "Serilog.Sinks.Console": {
+              "target": "Package",
+              "version": "[4.1.0, )"
+            },
+            "Serilog.Sinks.File": {
+              "target": "Package",
+              "version": "[5.0.0, )"
             }
           },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/7.0.203/RuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "/Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Library/RB.Bot/RB.Bot.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Library/RB.Bot/RB.Bot.csproj",
+        "projectName": "RB.Bot",
+        "projectPath": "/Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Library/RB.Bot/RB.Bot.csproj",
+        "packagesPath": "/Users/ngoedde/.nuget/packages/",
+        "outputPath": "/Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Library/RB.Bot/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/Users/ngoedde/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net7.0"
+        ],
+        "sources": {
+          "/usr/local/share/dotnet/library-packs": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net7.0": {
+            "targetAlias": "net7.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net7.0": {
+          "targetAlias": "net7.0",
           "imports": [
             "net461",
             "net462",
@@ -124,6 +190,12 @@
       "frameworks": {
         "net7.0": {
           "targetAlias": "net7.0",
+          "dependencies": {
+            "Serilog": {
+              "target": "Package",
+              "version": "[3.0.1, )"
+            }
+          },
           "imports": [
             "net461",
             "net462",
@@ -182,6 +254,10 @@
             "Microsoft.Extensions.ObjectPool": {
               "target": "Package",
               "version": "[7.0.4, )"
+            },
+            "Serilog": {
+              "target": "Package",
+              "version": "[3.0.1, )"
             }
           },
           "imports": [
@@ -242,6 +318,12 @@
       "frameworks": {
         "net7.0": {
           "targetAlias": "net7.0",
+          "dependencies": {
+            "Serilog": {
+              "target": "Package",
+              "version": "[3.0.1, )"
+            }
+          },
           "imports": [
             "net461",
             "net462",
@@ -285,6 +367,9 @@
           "net7.0": {
             "targetAlias": "net7.0",
             "projectReferences": {
+              "/Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Library/RB.Bot/RB.Bot.csproj": {
+                "projectPath": "/Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Library/RB.Bot/RB.Bot.csproj"
+              },
               "/Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Library/RB.Core.Net.Common/RB.Core.Net.Common.csproj": {
                 "projectPath": "/Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Library/RB.Core.Net.Common/RB.Core.Net.Common.csproj"
               },
@@ -313,6 +398,10 @@
             "Microsoft.Extensions.DependencyInjection.Abstractions": {
               "target": "Package",
               "version": "[7.0.0, )"
+            },
+            "Serilog": {
+              "target": "Package",
+              "version": "[3.0.1, )"
             }
           },
           "imports": [
@@ -389,6 +478,10 @@
             "Microsoft.Extensions.Options": {
               "target": "Package",
               "version": "[7.0.1, )"
+            },
+            "Serilog": {
+              "target": "Package",
+              "version": "[3.0.1, )"
             }
           },
           "imports": [
@@ -445,6 +538,12 @@
       "frameworks": {
         "net7.0": {
           "targetAlias": "net7.0",
+          "dependencies": {
+            "Serilog": {
+              "target": "Package",
+              "version": "[3.0.1, )"
+            }
+          },
           "imports": [
             "net461",
             "net462",

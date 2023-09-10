@@ -8,6 +8,7 @@ using System.Net.Sockets;
 using RB.Core.Net.Network;
 using RB.Core.Net.Network.Memory;
 using RB.Core.Net.Network.Tcp;
+using Serilog;
 
 namespace RB.Core.Net;
 
@@ -22,7 +23,6 @@ public class NetEngine : MessageEngine
     private readonly INetReceiver _receiver;
     private readonly INetSender _sender;
 
-
     public INetReceiver Receiver => _receiver;
     public INetSender Sender => _sender;
 
@@ -31,7 +31,7 @@ public class NetEngine : MessageEngine
 
     public NetEngine()
     {
-        _router = new NetMsgRouter(_allocator, _poster);
+        _router = new NetMsgRouter(_msgAllocator, _msgPoster);
         _socketPool = new SocketPool();
 
         _disconnector = new NetDisconnecter(_socketPool, this.Disconnector_Disconnected);
@@ -39,10 +39,9 @@ public class NetEngine : MessageEngine
         _acceptor = new NetAcceptor(_socketPool, this.Acceptor_Accepted);
         _receiver = new NetReceiver(_disconnector, this.Receiver_Received);
         _sender = new NetSender(_disconnector, this.Sender_Sent);
-
         _sessionManager = new SessionManager(_generator);
     }
-
+    
     public void Start(ushort port) => _acceptor.Listen("0.0.0.0", port);
 
     public void Connect(EndPoint endpoint)
@@ -50,11 +49,11 @@ public class NetEngine : MessageEngine
         _connector.Connect(endpoint);
     }
 
-    public bool PostMsg(Message msg) => _poster.PostMsg(msg);
+    public bool PostMsg(Message msg) => _msgPoster.PostMsg(msg);
 
     public bool PostConnect(string? hostOrIP, ushort port)
     {
-        using var msg = _allocator.NewLocalMsg(NetMsgID.LOCAL_NET_CONNECT);
+        using var msg = _msgAllocator.NewLocalMsg(NetMsgId.LocalNetConnect);
         if (!msg.TryWrite(hostOrIP)) return false;
         if (!msg.TryWrite(port)) return false;
 
@@ -63,7 +62,8 @@ public class NetEngine : MessageEngine
 
     public bool PostDisconnect(int id, DisconnectReason reason = DisconnectReason.Intentional)
     {
-        using var msg = _allocator.NewLocalMsg(NetMsgID.LOCAL_NET_DISCONNECT);
+        using var msg = _msgAllocator.NewLocalMsg(NetMsgId.LocalNetDisconnect);
+        
         if (!msg.TryWrite(id)) return false;
         if (!msg.TryWrite(reason)) return false;
 
@@ -77,17 +77,15 @@ public class NetEngine : MessageEngine
 
     protected virtual void OnConnectedSocket(Socket socket)
     {
-        var session = _sessionManager.CreateSession(socket, new ClientProtocol(_allocator, _poster));
+        var session = _sessionManager.CreateSession(socket, new ClientProtocol(_msgAllocator, _msgPoster));
         _router.PostLocalNetConnected(session.Id);
         session.Protocol.Initialize(session.Id); // TODO: Move into handler of NetConnected for thread safety
         _receiver.Receive(session);
-        
-        Console.WriteLine("Socket connected!");
     }
 
     protected virtual void OnAcceptedSocket(Socket socket)
     {
-        var session = _sessionManager.CreateSession(socket, new ServerProtocol(_allocator, _poster));
+        var session = _sessionManager.CreateSession(socket, new ServerProtocol(_msgAllocator, _msgPoster));
         _router.PostLocalNetConnected(this.Id);
         session.Protocol.Initialize(session.Id); // TODO: Move into handler of NetConnected for thread safety
         _receiver.Receive(session);
@@ -102,7 +100,7 @@ public class NetEngine : MessageEngine
         var protocol = session.Protocol;
         if (!protocol.Receive(buffer.Span.Slice(0, bytesTransferred)))
         {
-            Console.WriteLine($"{nameof(this.Receiver_Received)}: Failed to build msg.");
+            Log.Warning($"{nameof(this.Receiver_Received)}: Failed to build msg.");
             _disconnector.Disconnect(session, DisconnectReason.Intentional);
             return;
         }
@@ -118,7 +116,7 @@ public class NetEngine : MessageEngine
 
                 if (!protocol.Decode(msg))
                 {
-                    Console.WriteLine($"{nameof(this.Receiver_Received)}: Failed to decode {msg.ID}.");
+                    Log.Error($"{nameof(this.Receiver_Received)}: Failed to decode {msg.ID}.");
                     _disconnector.Disconnect(session, DisconnectReason.Intentional);
                     return;
                 }
@@ -137,13 +135,13 @@ public class NetEngine : MessageEngine
     {
         _sessionManager.TryRemoveSessionById(session.Id);
 
-        Console.WriteLine($"#{session.Id} ({session.RemoteAddress}) disconnected ({reason})");
+        Log.Debug($"#{session.Id} ({session.RemoteAddress}) disconnected ({reason})");
         _router.PostLocalNetDisconnected(session.Id, reason);
     }
 
     protected override bool OnMessage(Message msg)
     {
-        if (msg.ID == NetMsgID.NET_KEYEXCHANGE_REQ)
+        if (msg.ID == NetMsgId.NetKeyExchangeReq)
         {
             if (!this.OnKeyExchangeReq(msg))
             {
@@ -151,7 +149,7 @@ public class NetEngine : MessageEngine
                 return false;
             }
         }
-        else if (msg.ID == NetMsgID.NET_KEYEXCHANGE_ACK)
+        else if (msg.ID == NetMsgId.NetKeyExchangeAck)
         {
             if (!this.OnKeyExchangeAck(msg))
             {
@@ -159,7 +157,6 @@ public class NetEngine : MessageEngine
                 return false;
             }
         }
-
         if (!base.OnMessage(msg))
         {
             this.PostDisconnect(msg.SenderID);
@@ -173,14 +170,14 @@ public class NetEngine : MessageEngine
     {
         if (!_sessionManager.TryFindSessionById(msg.ReceiverID, out var session))
         {
-            Console.WriteLine($"{nameof(this.SendMessage)}: Receiver not found.");
+            Log.Warning($"{nameof(this.SendMessage)}: Receiver not found.");
             return;
         }
 
         var protocol = session.Protocol;
         if (!protocol.Encode(msg))
         {
-            Console.WriteLine($"{nameof(this.SendMessage)}: Failed to send {msg}.");
+            Log.Error($"{nameof(this.SendMessage)}: Failed to send {msg}.");
             _disconnector.Disconnect(session, DisconnectReason.Intentional);
             return;
         }
@@ -213,6 +210,7 @@ public class NetEngine : MessageEngine
             _disconnector.Disconnect(session, DisconnectReason.Intentional);
             return false;
         }
+
         return true;
     }
 }

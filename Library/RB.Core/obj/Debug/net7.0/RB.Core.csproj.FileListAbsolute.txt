@@ -22,3 +22,6 @@
 /Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Library/RB.Core/bin/Debug/net7.0/RB.Game.Client.pdb
 /Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Library/RB.Core/bin/Debug/net7.0/RB.Game.pdb
 /Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Library/RB.Core/bin/Debug/net7.0/RB.Core.FileSystem.pdb
+/Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Library/RB.Core/bin/Debug/net7.0/RB.Bot.dll
+/Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Library/RB.Core/bin/Debug/net7.0/RB.Bot.pdb
+/Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Library/RB.Core/bin/Debug/net7.0/Config/AppConfig.json

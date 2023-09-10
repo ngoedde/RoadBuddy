@@ -15,7 +15,10 @@
           "Microsoft.Extensions.Options.ConfigurationExtensions": "7.0.0",
           "RB.Core": "1.0.0",
           "RB.Core.Net": "1.0.0",
-          "RB.Game.Client": "1.0.0"
+          "RB.Game.Client": "1.0.0",
+          "Serilog": "3.0.1",
+          "Serilog.Sinks.Console": "4.1.0",
+          "Serilog.Sinks.File": "5.0.0"
         },
         "runtime": {
           "RB.CLI.dll": {}
@@ -179,32 +182,73 @@
           }
         }
       },
+      "Serilog/3.0.1": {
+        "runtime": {
+          "lib/net7.0/Serilog.dll": {
+            "assemblyVersion": "2.0.0.0",
+            "fileVersion": "3.0.1.0"
+          }
+        }
+      },
+      "Serilog.Sinks.Console/4.1.0": {
+        "dependencies": {
+          "Serilog": "3.0.1"
+        },
+        "runtime": {
+          "lib/net5.0/Serilog.Sinks.Console.dll": {
+            "assemblyVersion": "4.1.0.0",
+            "fileVersion": "4.1.0.0"
+          }
+        }
+      },
+      "Serilog.Sinks.File/5.0.0": {
+        "dependencies": {
+          "Serilog": "3.0.1"
+        },
+        "runtime": {
+          "lib/net5.0/Serilog.Sinks.File.dll": {
+            "assemblyVersion": "5.0.0.0",
+            "fileVersion": "5.0.0.0"
+          }
+        }
+      },
       "System.Text.Encodings.Web/7.0.0": {},
       "System.Text.Json/7.0.0": {
         "dependencies": {
           "System.Text.Encodings.Web": "7.0.0"
         }
       },
+      "RB.Bot/1.0.0": {
+        "runtime": {
+          "RB.Bot.dll": {}
+        }
+      },
       "RB.Core/1.0.0": {
         "dependencies": {
           "Microsoft.Extensions.DependencyInjection.Abstractions": "7.0.0",
+          "RB.Bot": "1.0.0",
           "RB.Core.Net": "1.0.0",
           "RB.Core.Net.Common": "1.0.0",
           "RB.Game": "1.0.0",
-          "RB.Game.Client": "1.0.0"
+          "RB.Game.Client": "1.0.0",
+          "Serilog": "3.0.1"
         },
         "runtime": {
           "RB.Core.dll": {}
         }
       },
       "RB.Core.FileSystem/1.0.0": {
+        "dependencies": {
+          "Serilog": "3.0.1"
+        },
         "runtime": {
           "RB.Core.FileSystem.dll": {}
         }
       },
       "RB.Core.Net/1.0.0": {
         "dependencies": {
-          "RB.Core.Net.Common": "1.0.0"
+          "RB.Core.Net.Common": "1.0.0",
+          "Serilog": "3.0.1"
         },
         "runtime": {
           "RB.Core.Net.dll": {}
@@ -212,13 +256,17 @@
       },
       "RB.Core.Net.Common/1.0.0": {
         "dependencies": {
-          "Microsoft.Extensions.ObjectPool": "7.0.4"
+          "Microsoft.Extensions.ObjectPool": "7.0.4",
+          "Serilog": "3.0.1"
         },
         "runtime": {
           "RB.Core.Net.Common.dll": {}
         }
       },
       "RB.Game/1.0.0": {
+        "dependencies": {
+          "Serilog": "3.0.1"
+        },
         "runtime": {
           "RB.Game.dll": {}
         }
@@ -229,7 +277,8 @@
           "Microsoft.Extensions.Configuration.Binder": "7.0.4",
           "Microsoft.Extensions.DependencyInjection.Abstractions": "7.0.0",
           "Microsoft.Extensions.Options": "7.0.1",
-          "RB.Core.FileSystem": "1.0.0"
+          "RB.Core.FileSystem": "1.0.0",
+          "Serilog": "3.0.1"
         },
         "runtime": {
           "RB.Game.Client.dll": {}
@@ -341,6 +390,27 @@
       "path": "microsoft.extensions.primitives/7.0.0",
       "hashPath": "microsoft.extensions.primitives.7.0.0.nupkg.sha512"
     },
+    "Serilog/3.0.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-E4UmOQ++eNJax1laE+lws7E3zbhKgHsGJbO7ra0yE5smUh+5FfUPIKKBxM3MO1tK4sgpQke6/pLReDxIc/ggNw==",
+      "path": "serilog/3.0.1",
+      "hashPath": "serilog.3.0.1.nupkg.sha512"
+    },
+    "Serilog.Sinks.Console/4.1.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-K6N5q+5fetjnJPvCmkWOpJ/V8IEIoMIB1s86OzBrbxwTyHxdx3pmz4H+8+O/Dc/ftUX12DM1aynx/dDowkwzqg==",
+      "path": "serilog.sinks.console/4.1.0",
+      "hashPath": "serilog.sinks.console.4.1.0.nupkg.sha512"
+    },
+    "Serilog.Sinks.File/5.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-uwV5hdhWPwUH1szhO8PJpFiahqXmzPzJT/sOijH/kFgUx+cyoDTMM8MHD0adw9+Iem6itoibbUXHYslzXsLEAg==",
+      "path": "serilog.sinks.file/5.0.0",
+      "hashPath": "serilog.sinks.file.5.0.0.nupkg.sha512"
+    },
     "System.Text.Encodings.Web/7.0.0": {
       "type": "package",
       "serviceable": true,
@@ -354,6 +424,11 @@
       "sha512": "sha512-DaGSsVqKsn/ia6RG8frjwmJonfos0srquhw09TlT8KRw5I43E+4gs+/bZj4K0vShJ5H9imCuXupb4RmS+dBy3w==",
       "path": "system.text.json/7.0.0",
       "hashPath": "system.text.json.7.0.0.nupkg.sha512"
+    },
+    "RB.Bot/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
     },
     "RB.Core/1.0.0": {
       "type": "project",

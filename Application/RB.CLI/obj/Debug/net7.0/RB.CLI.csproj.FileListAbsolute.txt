@@ -42,3 +42,8 @@
 /Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Application/RB.CLI/bin/Debug/net7.0/RB.Core.FileSystem.pdb
 /Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Application/RB.CLI/bin/Debug/net7.0/RB.Game.dll
 /Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Application/RB.CLI/bin/Debug/net7.0/RB.Game.pdb
+/Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Application/RB.CLI/bin/Debug/net7.0/RB.Bot.dll
+/Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Application/RB.CLI/bin/Debug/net7.0/RB.Bot.pdb
+/Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Application/RB.CLI/bin/Debug/net7.0/Serilog.dll
+/Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Application/RB.CLI/bin/Debug/net7.0/Serilog.Sinks.Console.dll
+/Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Application/RB.CLI/bin/Debug/net7.0/Serilog.Sinks.File.dll

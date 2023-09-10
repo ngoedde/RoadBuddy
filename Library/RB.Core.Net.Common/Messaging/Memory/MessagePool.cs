@@ -40,6 +40,7 @@ public class MessagePool : CustomObjectPool<Message>, IMessagePool
                 throw new Exception("Trying to free already freed.");
             item.IsRented = false;
         }
+
         item.Reset();
         base.Return(item);
     }

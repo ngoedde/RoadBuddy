@@ -6,6 +6,7 @@ using System.Net;
 using System.Net.Sockets;
 using RB.Core.Net.Network.Memory;
 using RB.Core.Net.Network.Memory.EventArgs;
+using Serilog;
 
 namespace RB.Core.Net.Network.Tcp;
 
@@ -36,7 +37,7 @@ internal class NetConnector : NetIOHandler, INetConnector
         {
             connectArgs.RemoteEndPoint = remoteEndPoint;
 
-            Console.WriteLine($"Connecting to {remoteEndPoint}...");
+            Log.Debug($"Connecting to {remoteEndPoint}...");
 
             // If the I/O operation is pending, the SocketAsyncEventArgs.Completed event will be raised upon completion of the operation.
             if (socket.ConnectAsync(connectArgs))
@@ -48,7 +49,7 @@ internal class NetConnector : NetIOHandler, INetConnector
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex);
+            Log.Error(ex.Message);
 
             _socketPool.Return(socket);
             _connectEventArgsPool.Return(connectArgs);
@@ -65,7 +66,7 @@ internal class NetConnector : NetIOHandler, INetConnector
     {
         if (e.ConnectSocket == null)
         {
-            Console.WriteLine($"{nameof(this.ConnectCompleted)}: ConnectSocket is NULL.");
+            Log.Error($"{nameof(this.ConnectCompleted)}: ConnectSocket is NULL.");
 
             _connectEventArgsPool.Return(e);
             return;
@@ -73,7 +74,7 @@ internal class NetConnector : NetIOHandler, INetConnector
 
         if (e.SocketError != SocketError.Success)
         {
-            Console.WriteLine($"{nameof(this.ConnectCompleted)}: {e.SocketError}");
+            Log.Error($"{nameof(this.ConnectCompleted)}: {e.SocketError}");
 
             _socketPool.Return(e.ConnectSocket);
             _connectEventArgsPool.Return(e);
@@ -86,7 +87,7 @@ internal class NetConnector : NetIOHandler, INetConnector
 
     protected virtual void OnConnected(Socket socket)
     {
-        Console.WriteLine($"Connected to {socket.RemoteEndPoint}!");
+        Log.Debug($"Connected to {socket.RemoteEndPoint}!");
 
         _connected?.Invoke(socket);
     }

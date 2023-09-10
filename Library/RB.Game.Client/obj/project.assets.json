@@ -112,9 +112,25 @@
           "buildTransitive/net6.0/_._": {}
         }
       },
+      "Serilog/3.0.1": {
+        "type": "package",
+        "compile": {
+          "lib/net7.0/Serilog.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net7.0/Serilog.dll": {
+            "related": ".xml"
+          }
+        }
+      },
       "RB.Core.FileSystem/1.0.0": {
         "type": "project",
         "framework": ".NETCoreApp,Version=v7.0",
+        "dependencies": {
+          "Serilog": "3.0.1"
+        },
         "compile": {
           "bin/placeholder/RB.Core.FileSystem.dll": {}
         },
@@ -291,6 +307,33 @@
         "useSharedDesignerContext.txt"
       ]
     },
+    "Serilog/3.0.1": {
+      "sha512": "E4UmOQ++eNJax1laE+lws7E3zbhKgHsGJbO7ra0yE5smUh+5FfUPIKKBxM3MO1tK4sgpQke6/pLReDxIc/ggNw==",
+      "type": "package",
+      "path": "serilog/3.0.1",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "README.md",
+        "icon.png",
+        "lib/net462/Serilog.dll",
+        "lib/net462/Serilog.xml",
+        "lib/net471/Serilog.dll",
+        "lib/net471/Serilog.xml",
+        "lib/net5.0/Serilog.dll",
+        "lib/net5.0/Serilog.xml",
+        "lib/net6.0/Serilog.dll",
+        "lib/net6.0/Serilog.xml",
+        "lib/net7.0/Serilog.dll",
+        "lib/net7.0/Serilog.xml",
+        "lib/netstandard2.0/Serilog.dll",
+        "lib/netstandard2.0/Serilog.xml",
+        "lib/netstandard2.1/Serilog.dll",
+        "lib/netstandard2.1/Serilog.xml",
+        "serilog.3.0.1.nupkg.sha512",
+        "serilog.nuspec"
+      ]
+    },
     "RB.Core.FileSystem/1.0.0": {
       "type": "project",
       "path": "../RB.Core.FileSystem/RB.Core.FileSystem.csproj",
@@ -303,7 +346,8 @@
       "Microsoft.Extensions.Configuration.Binder >= 7.0.4",
       "Microsoft.Extensions.DependencyInjection.Abstractions >= 7.0.0",
       "Microsoft.Extensions.Options >= 7.0.1",
-      "RB.Core.FileSystem >= 1.0.0"
+      "RB.Core.FileSystem >= 1.0.0",
+      "Serilog >= 3.0.1"
     ]
   },
   "packageFolders": {
@@ -363,6 +407,10 @@
           "Microsoft.Extensions.Options": {
             "target": "Package",
             "version": "[7.0.1, )"
+          },
+          "Serilog": {
+            "target": "Package",
+            "version": "[3.0.1, )"
           }
         },
         "imports": [

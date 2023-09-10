@@ -11,7 +11,7 @@ namespace RB.Core.Net;
 
 internal class ClientProtocol : Protocol
 {
-    public ClientProtocol(IMessageAllocator allocator, IMessagePoster poster) : base(allocator, poster, ClientMessageDecoder.Shared, ClientMessageEncoder.Shared)
+    public ClientProtocol(IMessageAllocator allocator, IMessagePoster poster) : base(allocator, poster,  ClientMessageDecoder.Shared, ClientMessageEncoder.Shared)
     {
 
     }

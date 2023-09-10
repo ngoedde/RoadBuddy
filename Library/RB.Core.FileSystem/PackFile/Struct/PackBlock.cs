@@ -10,16 +10,6 @@ public record PackBlock
     public PackEntry[] Entries = new PackEntry[20];
 
     /// <summary>
-    ///     The identifier of this block
-    /// </summary>
-    public int Id;
-
-    /// <summary>
-    ///     The identifier for the parent folder of this block
-    /// </summary>
-    public int ParentFolderId;
-
-    /// <summary>
     ///     The block position inside the pack file
     /// </summary>
     public long Position;

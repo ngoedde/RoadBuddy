@@ -14,9 +14,6 @@ public class PackFileSystem : IFileSystem, IDisposable
     /// <inheritdoc />
     public IFolder Root => new PackFolder("", new PackEntry
     {
-        Id = 0,
-        BlockId = Archive.Blocks[0].Id,
-        ParentFolderId = 0,
         CreationTime = DateTime.Now,
         ModifyTime = DateTime.Now,
         DataPosition = 256,
@@ -31,61 +28,47 @@ public class PackFileSystem : IFileSystem, IDisposable
 
     /// <inheritdoc />
     public char PathSeparator => '\\';
-
-    /// <inheritdoc />
-    public bool ReadOnly { get; }
-    
-    public PackArchive Archive { get; }
     
     public Encoding Encoding { get; set; } = Encoding.Default;
 
     #endregion
-    
+
     #region Constructor
     
     private readonly FileStream _fileStream;
-    private readonly PackWriter? _packFileWriter;
+    private readonly PackArchive _archive;
     
-    public PackFileSystem(string path, bool readOnly)
+    public PackFileSystem(string path)
     {
-        ReadOnly = readOnly;
         BasePath = path;
 
         var packFileReader = new PackReader();
 
-        _fileStream = !readOnly
-            ? new FileStream(path, FileMode.Open, FileAccess.ReadWrite)
-            : new FileStream(path, FileMode.Open, FileAccess.Read);
+        _fileStream = new FileStream(path, FileMode.Open, FileAccess.Read);
 
-        Archive = packFileReader.Read(_fileStream, null,  PathSeparator);
-        _packFileWriter = ReadOnly ? null : new PackWriter(_fileStream, Archive);
-
+        _archive = packFileReader.Read(_fileStream, null,  PathSeparator);
+        
         PathUtil.PathSeparator = PathSeparator;
     }
 
-    public PackFileSystem(string path, string password, byte[] salt, bool readOnly)
+    public PackFileSystem(string path, string password, byte[] salt)
     {
-        ReadOnly = readOnly;
         BasePath = path;
 
-        _fileStream = !readOnly
-            ? new FileStream(path, FileMode.Open, FileAccess.ReadWrite)
-            : new FileStream(path, FileMode.Open, FileAccess.Read);
+        _fileStream = new FileStream(path, FileMode.Open, FileAccess.Read);
 
         var packFileReader = new PackReader();
 
         var key = BlowfishUtil.GenerateFinalBlowfishKey(password, salt);
         var blowfish = new Blowfish(key);
 
-        Archive = packFileReader.Read(_fileStream, blowfish, PathSeparator);
-        _packFileWriter = ReadOnly ? null : new PackWriter(_fileStream, Archive);
+        _archive = packFileReader.Read(_fileStream, blowfish, PathSeparator);
         
         PathUtil.PathSeparator = PathSeparator;
     }
 
-
-    public PackFileSystem(string path, string password, bool readOnly) : this(path, password,
-        new byte[] { 0x03, 0xF8, 0xE4, 0x44, 0x88, 0x99, 0x3F, 0x64, 0xFE, 0x35 }, readOnly)
+    public PackFileSystem(string path, string password) : this(path, password,
+        new byte[] { 0x03, 0xF8, 0xE4, 0x44, 0x88, 0x99, 0x3F, 0x64, 0xFE, 0x35 })
     {
     }
 
@@ -93,45 +76,14 @@ public class PackFileSystem : IFileSystem, IDisposable
 
     #region Implementations
 
-    public static PackFileSystem Create(string path)
-    {
-        using var fileStream = File.OpenWrite(path);
-
-        PackWriter.CreateNewPackFile(fileStream, null);
-
-        fileStream.Close();
-
-        return new PackFileSystem(path, false);
-    }
-
-    public static PackFileSystem Create(string path, string password)
-    {
-        return Create(path, password, new byte[] { 0x03, 0xF8, 0xE4, 0x44, 0x88, 0x99, 0x3F, 0x64, 0xFE, 0x35 });
-    }
-
-    public static PackFileSystem Create(string path, string password, byte[] salt)
-    {
-        var blowfish = new Blowfish(BlowfishUtil.GenerateFinalBlowfishKey(password, salt));
-
-        using var fileStream = File.OpenWrite(path);
-
-        PackWriter.CreateNewPackFile(fileStream, blowfish);
-
-        fileStream.Close();
-
-        return new PackFileSystem(path, password, salt, false);
-    }
-    
     /// <inheritdoc />
     public bool FileExists(string path)
     {
         if (string.IsNullOrEmpty(path))
             return false;
 
-        if (!Archive.LookupTable.ContainsKey(path))
+        if (!_archive.TryGetEntry(path, out var entry))
             return false;
-
-        var entry = Archive.GetEntry(path);
 
         return entry is { Type: PackEntryType.File };
     }
@@ -142,12 +94,10 @@ public class PackFileSystem : IFileSystem, IDisposable
         if (string.IsNullOrEmpty(path) || path == Root.Path)
             return true;
 
-        if (!Archive.LookupTable.ContainsKey(path))
+        if (!_archive.TryGetBlock(path, out _)) 
             return false;
 
-        var entry = Archive.GetEntry(path);
-
-        return entry is { Type: PackEntryType.Folder };
+        return true;
     }
 
     /// <inheritdoc />
@@ -155,7 +105,7 @@ public class PackFileSystem : IFileSystem, IDisposable
     {
         AssertFileExists(path);
 
-        var entry = Archive.GetEntry(path);
+        var entry = _archive.GetEntry(path);
 
         return new PackFile.PackFile(path, entry!, this);
     }
@@ -165,7 +115,7 @@ public class PackFileSystem : IFileSystem, IDisposable
     {
         AssertFolderExists(path);
 
-        var folderEntry = Archive.GetEntry(path)!;
+        var folderEntry = _archive.GetEntry(path)!;
         
         return new PackFolder(path, folderEntry, this);
     }
@@ -175,12 +125,20 @@ public class PackFileSystem : IFileSystem, IDisposable
     {
         AssertFolderExists(folderPath);
 
-        var entries = Archive.GetEntries(folderPath).Where(e => e.Type == PackEntryType.File);
-        var result = new List<IFile>();
-        result.AddRange(from entry in entries
-            let path = Archive.LookupTable.GetPathById(entry.Id)
-            select new PackFile.PackFile(path, entry, this));
+        if (!_archive.TryGetBlock(folderPath, out var block)) 
+            return Array.Empty<IFile>();
+        
+        var entries = block!.GetEntries().Where(e => e.Type == PackEntryType.File).ToArray();
 
+        var result = new Span<IFile>();
+
+        for (var iFile = 0; iFile < entries.Length; iFile++)
+        {
+            var file = entries[iFile];
+            
+            result[iFile] = new PackFile.PackFile(folderPath + file.Name, file, this);
+        }
+        
         return result.ToArray();
     }
 
@@ -189,13 +147,20 @@ public class PackFileSystem : IFileSystem, IDisposable
     {
         AssertFolderExists(folderPath);
 
-        // var entries = Archive.GetEntries(folderPath).Where(e => e.Type == PackEntryType.Folder && !e.IsNavigator());
-        var entries = Archive.GetEntries(folderPath).Where(e => e.Type == PackEntryType.Folder);
-        var result = new List<IFolder>();
-        result.AddRange(from entry in entries
-            let path = Archive.LookupTable.GetPathById(entry.Id)
-            select new PackFolder(path, entry, this));
+        if (!_archive.TryGetBlock(folderPath, out var block)) return Array.Empty<IFolder>();
+        
+        var entries = block!.GetEntries().Where(e => e.Type == PackEntryType.Folder).ToArray();
 
+        var result = new Span<IFolder>();
+
+        for (var iFolder = 0; iFolder < entries.Length; iFolder++)
+        {
+            var folder = entries[iFolder];
+            var currentFolderPath = PathUtil.Append(folderPath, folder.Name);
+
+            result[iFolder] = new PackFolder(currentFolderPath, folder, this);
+        }
+        
         return result.ToArray();
     }
 
@@ -203,190 +168,23 @@ public class PackFileSystem : IFileSystem, IDisposable
     public string[] GetChildren(string folderPath)
     {
         AssertFolderExists(folderPath);
-
-        var entry = Archive.GetEntry(folderPath)!;
-        var entries = Archive.GetEntries(entry.Id);
-
-        var result = new List<string>();
-        result.AddRange(entries.Select(packEntry => Archive.LookupTable.GetPathById(packEntry.Id))
-            .Where(path => path != null)!);
-
-        return result.ToArray();
-    }
-
-    /// <inheritdoc />
-    public IFile CreateFile(string path, byte[] data)
-    {
-        if (string.IsNullOrEmpty(path))
-            throw new IOException("The path can not be empty.");
-
-        AssertWritable();
-        AssertFileNotExist(path);
-
-        var fileName = PathUtil.GetFileName(path);
-        var parentFolderPath = PathUtil.GetFolderName(path);
-
-        if (!Archive.TryGetEntryWithBlock(parentFolderPath, out var parent, out var parentBlock))
-            throw new IOException($"The block for the folder {parentFolderPath} does not exist. ");
-
-        var folderBlock = Archive.GetBlockAt(parent!.DataPosition);
-        if (folderBlock == null)
-            throw new IOException($"The data block for the folder {parentFolderPath} does not exist. ");
         
-        var newEntry = _packFileWriter!.CreateFileEntry(fileName, data, folderBlock!, parent!);
-
-        return new PackFile.PackFile(path, newEntry, this);
-    }
-
-    /// <inheritdoc />
-    public IFile CreateFile(string path, string content)
-    {
-        AssertWritable();
-        AssertFileNotExist(path);
-
-        return CreateFile(path, Encoding.GetBytes(content));
-    }
-
-    /// <inheritdoc />
-    public IFolder CreateFolder(string path)
-    {
-        if (string.IsNullOrEmpty(path))
-            throw new IOException("The path can not be empty.");
-
-        AssertWritable();
-        AssertFileNotExist(path);
-        AssertFolderNotExist(path);
-
-        var parentFolderPath = PathUtil.GetFolderName(path);
-        AssertFolderExists(parentFolderPath);
-
-        if (!Archive.TryGetEntryWithBlock(parentFolderPath, out var parent, out var block))
-            throw new IOException($"The block or the entry for the folder {parentFolderPath} does not exist.");
+        if (!_archive.TryGetBlock(folderPath, out var block)) 
+            return Array.Empty<string>();
         
-        var folderBlock = Archive.GetBlockAt(parent!.DataPosition) ?? block;
+        var entries = block!.GetEntries().Where(e => e.Type != PackEntryType.Nop && !e.IsNavigator()).ToArray();
 
-        var newFolderName = PathUtil.GetFileName(path);
-        var newFolderEntry = _packFileWriter!.CreateFolderEntry(newFolderName, folderBlock!, parent);
+        var result = new Span<string>();
 
-        return new PackFolder(path, newFolderEntry, this);
-    }
-
-    /// <inheritdoc />
-    public void Move(string path, string newPath)
-    {
-        AssertWritable();
-
-        if (!FileExists(path) && !FolderExists(path))
-            throw new IOException($"The entry path {path} does not exist.");
-
-        if (!Archive.TryGetEntryWithBlock(path, out var sourceEntry, out var sourceBlock))
-            throw new IOException("The block or entry does not exist.");
-
-        var destinationParentPath = PathUtil.GetFolderName(newPath);
-        AssertFolderExists(destinationParentPath);
-
-        if (!Archive.TryGetEntryWithBlock(destinationParentPath, out var destinationFolder, out var destinationBlock))
-            throw new IOException("The block of the new parent folder does not exist.");
-
-        var newName = PathUtil.GetFileName(newPath);
-
-        _packFileWriter!.MoveEntry(sourceBlock!, sourceEntry!, destinationBlock!, destinationFolder!.Id, newName);
-    }
-
-    /// <inheritdoc />
-    public void Delete(string path)
-    {
-        AssertWritable();
-
-        if (!FileExists(path) && !FolderExists(path))
-            throw new IOException($"The entry path {path} does not exist.");
-
-        if (!Archive.TryGetEntryWithBlock(path, out var sourceEntry, out var sourceBlock))
-            throw new IOException("The entry itself or the block of the entry does not exist.");
-
-        _packFileWriter!.DeleteEntry(sourceBlock!, sourceEntry!);
-    }
-
-    /// <inheritdoc />
-    public IFile CopyFile(string path, string destinationPath)
-    {
-        AssertWritable();
-        AssertFileExists(path);
-        AssertFileNotExist(destinationPath);
-
-        var destinationParentPath = PathUtil.GetFolderName(destinationPath);
-        AssertFolderExists(destinationParentPath);
-
-        if (!Archive.TryGetEntryWithBlock(destinationParentPath, out var destinationParent, out var destinationBlock))
-            throw new IOException("The destination block for the file does not exist.");
-
-        var fileName = PathUtil.GetFileName(destinationPath);
-        var newFileEntry = _packFileWriter!.CreateFileEntry(fileName, OpenRead(path).ReadAllBytes(), destinationBlock!,
-            destinationParent!);
-
-        return new PackFile.PackFile(path, newFileEntry, this);
-    }
-
-    public IFile DuplicateFile(string path, string destinationPath)
-    {
-        AssertWritable();
-        AssertFileExists(path);
-        AssertFileNotExist(destinationPath);
-
-        var destinationParentPath = PathUtil.GetFolderName(destinationPath);
-        AssertFolderExists(destinationParentPath);
-
-        if (!Archive.TryGetEntryWithBlock(destinationParentPath, out _, out var destinationBlock))
-            throw new IOException("The destination block for the file does not exist.");
-
-        var sourceEntry = Archive.GetEntry(path)!;
-        var newFileEntry =
-            _packFileWriter!.DuplicateFileEntry(sourceEntry, destinationBlock!, Path.GetFileName(destinationPath));
-
-        return new PackFile.PackFile(path, newFileEntry, this);
-    }
-
-    /// <inheritdoc />
-    public IFolder CopyFolder(string path, string destinationPath, bool recursive = true)
-    {
-        AssertWritable();
-        AssertFolderExists(path);
-        AssertFolderNotExist(destinationPath);
-        AssertFileNotExist(destinationPath);
-
-        if (!Archive.TryGetEntryWithBlock(path, out var sourceEntry, out var sourceBlock))
-            throw new IOException($"The block or entry for path {path} do not exist.");
-
-        var parentDestinationPath = PathUtil.GetFolderName(destinationPath);
-        if (!Archive.TryGetEntryWithBlock(parentDestinationPath, out var destinationEntry, out var destinationBlock))
-            throw new IOException($"The block or entry for path {path} do not exist.");
-
-        if (GetChildren(path).Length > 0 && !recursive)
-            throw new IOException($"The folder {path} is not empty.");
-
-        CreateFolder(destinationPath);
-        
-        foreach (var subFolder in GetFolders(path))
-            CopyFolder(subFolder.Path,  PathUtil.EndingPathSeparator(destinationPath) + subFolder.Name);
-
-        foreach (var file in GetFiles(path))
+        for (var iEntry = 0; iEntry < entries.Length; iEntry++)
         {
-            var newFilePath = PathUtil.EndingPathSeparator(destinationPath) + file.Name;
-            AssertFileNotExist(newFilePath);
-
-            CreateFile(newFilePath, OpenRead(file.Path).ReadAllBytes());
+            var entry = entries[iEntry];
+            
+            var entryPath = PathUtil.Append(folderPath, entry.Name);
+            result[iEntry] = entryPath;
         }
-
-        return GetFolder(destinationPath);
-    }
-
-    /// <inheritdoc />
-    public IFileWriter OpenWrite(string path)
-    {
-        AssertWritable();
-        AssertFileExists(path);
-
-        throw new NotImplementedException();
+        
+        return result.ToArray();
     }
 
     /// <inheritdoc />
@@ -394,7 +192,7 @@ public class PackFileSystem : IFileSystem, IDisposable
     {
         AssertFileExists(path);
 
-        var entry = Archive.GetEntry(path);
+        var entry = _archive.GetEntry(path);
         if (entry is not { Type: PackEntryType.File })
             throw new FileNotFoundException($"The file {path} does not exist!");
 
@@ -424,26 +222,5 @@ public class PackFileSystem : IFileSystem, IDisposable
     {
         if (path != Root.Path && !FolderExists(path))
             throw new DirectoryNotFoundException($"The folder {path} does not exist.");
-    }
-
-    private void AssertFileNotExist(string path)
-    {
-        if (FileExists(path))
-            throw new IOException($"The file {path} does already exist.");
-    }
-
-    private void AssertFolderNotExist(string path)
-    {
-        if (FolderExists(path))
-            throw new IOException($"The folder {path} does already exist.");
-    }
-
-    private void AssertWritable()
-    {
-        if (ReadOnly)
-            throw new IOException("The file system is read-only.");
-
-        if (_packFileWriter == null)
-            throw new IOException("The pack writer is not set.");
     }
 }

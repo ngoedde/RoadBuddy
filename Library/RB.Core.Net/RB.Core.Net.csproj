@@ -11,4 +11,8 @@
     <ProjectReference Include="..\RB.Core.Net.Common\RB.Core.Net.Common.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Serilog" Version="3.0.1" />
+  </ItemGroup>
+
 </Project>

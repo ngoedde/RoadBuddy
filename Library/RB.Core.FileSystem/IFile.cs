@@ -19,16 +19,10 @@ public interface IFile
     #endregion
 
     #region Methods
-
-    public void Move(string destinationPath);
-
-    public IFile Copy(string destinationPath);
-
-    public void Delete();
+    
 
     public IFileReader OpenRead();
 
-    public IFileWriter OpenWrite();
 
     public byte[] Read(int position, int length)
     {
@@ -48,16 +42,6 @@ public interface IFile
     public string[] ReadAllLines()
     {
         return OpenRead().ReadAllText().Split(Environment.NewLine);
-    }
-
-    public void Write(byte[] data)
-    {
-        OpenWrite().Write(data);
-    }
-
-    public void Write(byte[] data, int position)
-    {
-        OpenWrite().Write(data, position);
     }
 
     #endregion
