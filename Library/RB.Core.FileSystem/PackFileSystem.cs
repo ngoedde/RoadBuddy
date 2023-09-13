@@ -9,8 +9,20 @@ namespace RB.Core.FileSystem;
 
 public class PackFileSystem : IFileSystem, IDisposable
 {
+    private void AssertFileExists(string path)
+    {
+        if (!FileExists(path))
+            throw new FileNotFoundException($"The file {path} does not exist.");
+    }
+
+    private void AssertFolderExists(string path)
+    {
+        if (path != Root.Path && !FolderExists(path))
+            throw new DirectoryNotFoundException($"The folder {path} does not exist.");
+    }
+
     #region Properties
-    
+
     /// <inheritdoc />
     public IFolder Root => new PackFolder("", new PackEntry
     {
@@ -28,16 +40,16 @@ public class PackFileSystem : IFileSystem, IDisposable
 
     /// <inheritdoc />
     public char PathSeparator => '\\';
-    
+
     public Encoding Encoding { get; set; } = Encoding.Default;
 
     #endregion
 
     #region Constructor
-    
+
     private readonly FileStream _fileStream;
     private readonly PackArchive _archive;
-    
+
     public PackFileSystem(string path)
     {
         BasePath = path;
@@ -46,8 +58,8 @@ public class PackFileSystem : IFileSystem, IDisposable
 
         _fileStream = new FileStream(path, FileMode.Open, FileAccess.Read);
 
-        _archive = packFileReader.Read(_fileStream, null,  PathSeparator);
-        
+        _archive = packFileReader.Read(_fileStream, null, PathSeparator);
+
         PathUtil.PathSeparator = PathSeparator;
     }
 
@@ -63,7 +75,7 @@ public class PackFileSystem : IFileSystem, IDisposable
         var blowfish = new Blowfish(key);
 
         _archive = packFileReader.Read(_fileStream, blowfish, PathSeparator);
-        
+
         PathUtil.PathSeparator = PathSeparator;
     }
 
@@ -94,7 +106,7 @@ public class PackFileSystem : IFileSystem, IDisposable
         if (string.IsNullOrEmpty(path) || path == Root.Path)
             return true;
 
-        if (!_archive.TryGetBlock(path, out _)) 
+        if (!_archive.TryGetBlock(path, out _))
             return false;
 
         return true;
@@ -116,7 +128,7 @@ public class PackFileSystem : IFileSystem, IDisposable
         AssertFolderExists(path);
 
         var folderEntry = _archive.GetEntry(path)!;
-        
+
         return new PackFolder(path, folderEntry, this);
     }
 
@@ -125,9 +137,9 @@ public class PackFileSystem : IFileSystem, IDisposable
     {
         AssertFolderExists(folderPath);
 
-        if (!_archive.TryGetBlock(folderPath, out var block)) 
+        if (!_archive.TryGetBlock(folderPath, out var block))
             return Array.Empty<IFile>();
-        
+
         var entries = block!.GetEntries().Where(e => e.Type == PackEntryType.File).ToArray();
 
         var result = new Span<IFile>();
@@ -135,10 +147,10 @@ public class PackFileSystem : IFileSystem, IDisposable
         for (var iFile = 0; iFile < entries.Length; iFile++)
         {
             var file = entries[iFile];
-            
+
             result[iFile] = new PackFile.PackFile(folderPath + file.Name, file, this);
         }
-        
+
         return result.ToArray();
     }
 
@@ -148,7 +160,7 @@ public class PackFileSystem : IFileSystem, IDisposable
         AssertFolderExists(folderPath);
 
         if (!_archive.TryGetBlock(folderPath, out var block)) return Array.Empty<IFolder>();
-        
+
         var entries = block!.GetEntries().Where(e => e.Type == PackEntryType.Folder).ToArray();
 
         var result = new Span<IFolder>();
@@ -160,7 +172,7 @@ public class PackFileSystem : IFileSystem, IDisposable
 
             result[iFolder] = new PackFolder(currentFolderPath, folder, this);
         }
-        
+
         return result.ToArray();
     }
 
@@ -168,10 +180,10 @@ public class PackFileSystem : IFileSystem, IDisposable
     public string[] GetChildren(string folderPath)
     {
         AssertFolderExists(folderPath);
-        
-        if (!_archive.TryGetBlock(folderPath, out var block)) 
+
+        if (!_archive.TryGetBlock(folderPath, out var block))
             return Array.Empty<string>();
-        
+
         var entries = block!.GetEntries().Where(e => e.Type != PackEntryType.Nop && !e.IsNavigator()).ToArray();
 
         var result = new Span<string>();
@@ -179,11 +191,11 @@ public class PackFileSystem : IFileSystem, IDisposable
         for (var iEntry = 0; iEntry < entries.Length; iEntry++)
         {
             var entry = entries[iEntry];
-            
+
             var entryPath = PathUtil.Append(folderPath, entry.Name);
             result[iEntry] = entryPath;
         }
-        
+
         return result.ToArray();
     }
 
@@ -202,25 +214,12 @@ public class PackFileSystem : IFileSystem, IDisposable
 
         return new PackFileReader(new MemoryStream(buffer));
     }
-    
+
     public void Dispose()
     {
         _fileStream.Close();
         _fileStream.Dispose();
     }
-    
-    #endregion
-    
-    
-    private void AssertFileExists(string path)
-    {
-        if (!FileExists(path))
-            throw new FileNotFoundException($"The file {path} does not exist.");
-    }
 
-    private void AssertFolderExists(string path)
-    {
-        if (path != Root.Path && !FolderExists(path))
-            throw new DirectoryNotFoundException($"The folder {path} does not exist.");
-    }
+    #endregion
 }

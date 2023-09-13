@@ -9,5 +9,5 @@ public enum DisconnectReason
     TimeOut,
     ClosedByPeer,
     ReceiveError,
-    SendError,
+    SendError
 }

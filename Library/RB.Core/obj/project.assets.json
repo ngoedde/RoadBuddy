@@ -138,16 +138,6 @@
           }
         }
       },
-      "RB.Bot/1.0.0": {
-        "type": "project",
-        "framework": ".NETCoreApp,Version=v7.0",
-        "compile": {
-          "bin/placeholder/RB.Bot.dll": {}
-        },
-        "runtime": {
-          "bin/placeholder/RB.Bot.dll": {}
-        }
-      },
       "RB.Core.FileSystem/1.0.0": {
         "type": "project",
         "framework": ".NETCoreApp,Version=v7.0",
@@ -193,6 +183,7 @@
         "type": "project",
         "framework": ".NETCoreApp,Version=v7.0",
         "dependencies": {
+          "RB.Core.Net.Common": "1.0.0",
           "Serilog": "3.0.1"
         },
         "compile": {
@@ -211,6 +202,7 @@
           "Microsoft.Extensions.DependencyInjection.Abstractions": "7.0.0",
           "Microsoft.Extensions.Options": "7.0.1",
           "RB.Core.FileSystem": "1.0.0",
+          "RB.Game": "1.0.0",
           "Serilog": "3.0.1"
         },
         "compile": {
@@ -435,11 +427,6 @@
         "serilog.nuspec"
       ]
     },
-    "RB.Bot/1.0.0": {
-      "type": "project",
-      "path": "../RB.Bot/RB.Bot.csproj",
-      "msbuildProject": "../RB.Bot/RB.Bot.csproj"
-    },
     "RB.Core.FileSystem/1.0.0": {
       "type": "project",
       "path": "../RB.Core.FileSystem/RB.Core.FileSystem.csproj",
@@ -469,7 +456,6 @@
   "projectFileDependencyGroups": {
     "net7.0": [
       "Microsoft.Extensions.DependencyInjection.Abstractions >= 7.0.0",
-      "RB.Bot >= 1.0.0",
       "RB.Core.Net >= 1.0.0",
       "RB.Core.Net.Common >= 1.0.0",
       "RB.Game >= 1.0.0",
@@ -503,9 +489,6 @@
         "net7.0": {
           "targetAlias": "net7.0",
           "projectReferences": {
-            "/Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Library/RB.Bot/RB.Bot.csproj": {
-              "projectPath": "/Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Library/RB.Bot/RB.Bot.csproj"
-            },
             "/Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Library/RB.Core.Net.Common/RB.Core.Net.Common.csproj": {
               "projectPath": "/Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Library/RB.Core.Net.Common/RB.Core.Net.Common.csproj"
             },

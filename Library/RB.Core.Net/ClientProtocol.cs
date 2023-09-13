@@ -11,9 +11,9 @@ namespace RB.Core.Net;
 
 internal class ClientProtocol : Protocol
 {
-    public ClientProtocol(IMessageAllocator allocator, IMessagePoster poster) : base(allocator, poster,  ClientMessageDecoder.Shared, ClientMessageEncoder.Shared)
+    public ClientProtocol(IMessageAllocator allocator, IMessagePoster poster) : base(allocator, poster,
+        ClientMessageDecoder.Shared, ClientMessageEncoder.Shared)
     {
-
     }
 
     public override bool Initialize(int receiverId)
@@ -48,16 +48,16 @@ internal class ClientProtocol : Protocol
         }
 
         if ((option & ProtocolOptions.KeyExchange) != 0)
-            return this.KeyExchange(msg);
+            return KeyExchange(msg);
 
         if ((option & ProtocolOptions.KeyChallenge) != 0)
-            return this.KeyChallenge(msg);
+            return KeyChallenge(msg);
 
-        this.PostKeyAccepted(msg.SenderID);
+        PostKeyAccepted(msg.SenderID);
         _context.KeyState = KeyExchangeState.Accepted;
 
-        this.PostLocalKeyAccepted(msg.SenderID);
-        this.OnKeyExchangeAccepted();
+        PostLocalKeyAccepted(msg.SenderID);
+        OnKeyExchangeAccepted();
 
         return KeyExchangeResult.Success;
     }
@@ -82,17 +82,19 @@ internal class ClientProtocol : Protocol
         _context.LocalPublic = KeyExchangeHelper.G_pow_X_mod_P(_context.Generator, _context.Private, _context.Prime);
 
         _context.RemotePublic = senderInfo.Public;
-        _context.SharedSecret = KeyExchangeHelper.G_pow_X_mod_P(_context.RemotePublic, _context.Private, _context.Prime);
+        _context.SharedSecret =
+            KeyExchangeHelper.G_pow_X_mod_P(_context.RemotePublic, _context.Private, _context.Prime);
 
         Span<byte> key = stackalloc byte[sizeof(ulong)];
         KeyExchangeHelper.CalculateKey(key, _context.SharedSecret, _context.RemotePublic, _context.LocalPublic);
         _context.Blowfish.Initialize(key);
 
         Span<byte> localSignature = stackalloc byte[sizeof(ulong)];
-        KeyExchangeHelper.CalculateSignature(localSignature, _context.SharedSecret, _context.LocalPublic, _context.RemotePublic);
+        KeyExchangeHelper.CalculateSignature(localSignature, _context.SharedSecret, _context.LocalPublic,
+            _context.RemotePublic);
         _context.Blowfish.Encode(localSignature);
 
-        if (!this.PostKeyChallenge(msg.SenderID, _context.LocalPublic, localSignature))
+        if (!PostKeyChallenge(msg.SenderID, _context.LocalPublic, localSignature))
             return KeyExchangeResult.InvalidState;
 
         _context.KeyState = KeyExchangeState.Initialized;
@@ -108,25 +110,24 @@ internal class ClientProtocol : Protocol
         if (!msg.TryRead(remoteSignature)) return KeyExchangeResult.InvalidMsg;
 
         Span<byte> localSignature = stackalloc byte[sizeof(ulong)];
-        KeyExchangeHelper.CalculateSignature(localSignature, _context.SharedSecret, _context.RemotePublic, _context.LocalPublic);
+        KeyExchangeHelper.CalculateSignature(localSignature, _context.SharedSecret, _context.RemotePublic,
+            _context.LocalPublic);
         _context.Blowfish.Encode(localSignature);
 
         // Compare local and remote signature
-        for (int i = 0; i < sizeof(ulong); i++)
-        {
+        for (var i = 0; i < sizeof(ulong); i++)
             if (localSignature[i] != remoteSignature[i])
                 return KeyExchangeResult.InvalidSignature;
-        }
 
         Span<byte> key = stackalloc byte[sizeof(ulong)];
         KeyExchangeHelper.CalculateFinalKey(key, _context.SharedSecret, _context.InitialKey);
         _context.Blowfish.Initialize(key);
 
-        this.PostKeyAccepted(msg.SenderID);
+        PostKeyAccepted(msg.SenderID);
         _context.KeyState = KeyExchangeState.Accepted;
 
-        this.PostLocalKeyAccepted(msg.SenderID);
-        this.OnKeyExchangeAccepted();
+        PostLocalKeyAccepted(msg.SenderID);
+        OnKeyExchangeAccepted();
 
         return KeyExchangeResult.Success;
     }

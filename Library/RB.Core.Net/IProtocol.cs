@@ -1,6 +1,5 @@
-﻿using RB.Core.Net.Common.Messaging;
-
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
+using RB.Core.Net.Common.Messaging;
 
 namespace RB.Core.Net;
 

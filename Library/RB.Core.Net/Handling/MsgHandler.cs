@@ -4,3 +4,4 @@
 //
 // public delegate bool MsgHandler<in TMsg>(TMsg msg) where
 //     TMsg : MessageStream;
+

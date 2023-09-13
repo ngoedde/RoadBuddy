@@ -8,6 +8,24 @@ internal class PackArchive
     public const string ShadowRootName = "";
     public const string ShadowRootPath = "";
 
+    private readonly PackResolver _packResolver;
+
+    /// <summary>
+    ///     Creates a new instance of <see cref="PackArchive" />
+    /// </summary>
+    /// <param name="header">The header of the pack file.</param>
+    /// <param name="blowfish">The cryptographic blowfish for this pack file or null if the file is not encrypted.</param>
+    /// <param name="resolver"></param>
+    /// <param name="pathSeparator">The character to determine path separation.</param>
+    public PackArchive(PackHeader header, Blowfish? blowfish, PackResolver resolver, char pathSeparator = '\\')
+    {
+        Header = header;
+        Blowfish = blowfish;
+        PathSeparator = pathSeparator;
+
+        _packResolver = resolver;
+    }
+
     #region Properties
 
     /// <summary>
@@ -28,24 +46,6 @@ internal class PackArchive
     public Blowfish? Blowfish { get; }
 
     #endregion
-
-    private readonly PackResolver _packResolver;
-
-    /// <summary>
-    ///     Creates a new instance of <see cref="PackArchive" />
-    /// </summary>
-    /// <param name="header">The header of the pack file.</param>
-    /// <param name="blowfish">The cryptographic blowfish for this pack file or null if the file is not encrypted.</param>
-    /// <param name="resolver"></param>
-    /// <param name="pathSeparator">The character to determine path separation.</param>
-    public PackArchive(PackHeader header, Blowfish? blowfish, PackResolver resolver, char pathSeparator = '\\')
-    {
-        Header = header;
-        Blowfish = blowfish;
-        PathSeparator = pathSeparator;
-
-        _packResolver = resolver;
-    }
 
     #region Methods
 
@@ -71,7 +71,6 @@ internal class PackArchive
     }
 
     /// <summary>
-    ///     
     /// </summary>
     /// <param name="path"></param>
     /// <param name="entry"></param>
@@ -81,13 +80,13 @@ internal class PackArchive
         try
         {
             entry = GetEntry(path);
-            
+
             return true;
         }
         catch (Exception e)
         {
             entry = null;
-            
+
             return false;
         }
     }
@@ -97,7 +96,7 @@ internal class PackArchive
         try
         {
             block = GetBlock(path);
-            
+
             return true;
         }
         catch (Exception e)
@@ -107,7 +106,7 @@ internal class PackArchive
             return false;
         }
     }
-    
+
     /// <summary>
     ///     Returns a collection of child entries for the given path.
     /// </summary>
@@ -118,7 +117,7 @@ internal class PackArchive
         var entry = GetEntry(path);
         if (entry == null)
             return Array.Empty<PackEntry>();
-        
+
         var block = _packResolver.ResolveBlock(path);
 
         return block == null ? Array.Empty<PackEntry>() : block.GetEntries();

@@ -1,10 +1,8 @@
-﻿using RB.Core.Net.Common;
-
-
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Concurrent;
 using System.Diagnostics.CodeAnalysis;
 using System.Net.Sockets;
+using RB.Core.Net.Common;
 
 namespace RB.Core.Net.Network;
 
@@ -27,13 +25,25 @@ public class SessionManager : ISessionManager
         return session;
     }
 
-    public bool TryFindSessionById(int id, [MaybeNullWhen(false)] out Session session) => _sessions.TryGetValue(id, out session);
+    public bool TryFindSessionById(int id, [MaybeNullWhen(false)] out Session session)
+    {
+        return _sessions.TryGetValue(id, out session);
+    }
 
-    public bool TryRemoveSessionById(int id) => _sessions.TryRemove(id, out _);
+    public bool TryRemoveSessionById(int id)
+    {
+        return _sessions.TryRemove(id, out _);
+    }
 
-    public IEnumerator<Session> GetEnumerator() => _sessions.Values.GetEnumerator();
+    public IEnumerator<Session> GetEnumerator()
+    {
+        return _sessions.Values.GetEnumerator();
+    }
 
-    IEnumerator IEnumerable.GetEnumerator() => _sessions.Values.GetEnumerator();
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return _sessions.Values.GetEnumerator();
+    }
 
     public int Count => _sessions.Count;
 }

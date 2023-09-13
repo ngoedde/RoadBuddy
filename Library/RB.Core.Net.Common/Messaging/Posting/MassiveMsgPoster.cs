@@ -24,6 +24,7 @@ public class MassiveMsgPoster : IMassiveMsgPoster
             if (!_msgPoster.PostMsg(dataMsg))
                 return false;
         }
+
         return true;
     }
 }

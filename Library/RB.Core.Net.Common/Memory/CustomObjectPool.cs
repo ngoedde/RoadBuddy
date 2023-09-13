@@ -6,7 +6,6 @@ public abstract class CustomObjectPool<T> : ICustomObjectPool<T>
     where T : notnull
 {
     private readonly ConcurrentQueue<T> _objects;
-    public int Count => _objects.Count;
 
     protected CustomObjectPool()
     {
@@ -16,10 +15,12 @@ public abstract class CustomObjectPool<T> : ICustomObjectPool<T>
         _objects = new ConcurrentQueue<T>();
     }
 
+    public int Count => _objects.Count;
+
     public void Allocate(int size)
     {
-        for (int i = 0; i < size; i++)
-            _objects.Enqueue(this.Create());
+        for (var i = 0; i < size; i++)
+            _objects.Enqueue(Create());
     }
 
     public abstract T Create();
@@ -28,21 +29,21 @@ public abstract class CustomObjectPool<T> : ICustomObjectPool<T>
     {
     }
 
-    public virtual void Destroy(T item)
-    {
-    }
-
     public virtual T Rent()
     {
-        if (_objects.TryDequeue(out T? item))
+        if (_objects.TryDequeue(out var item))
             return item;
 
-        return this.Create();
+        return Create();
     }
 
     public virtual void Return(T item)
     {
-        this.Clear(item);
+        Clear(item);
         _objects.Enqueue(item);
+    }
+
+    public virtual void Destroy(T item)
+    {
     }
 }

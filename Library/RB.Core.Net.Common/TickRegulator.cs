@@ -2,27 +2,26 @@
 
 public class TickRegulator
 {
-    private bool _isActive;
-    private float _accumulatedTime;
     private readonly float _updateTime;
-
-    public bool IsActive => _isActive;
+    private float _accumulatedTime;
 
     public TickRegulator(float updateTime)
     {
-        _isActive = true;
+        IsActive = true;
         _updateTime = updateTime;
     }
 
+    public bool IsActive { get; private set; }
+
     public void Start()
     {
-        _isActive = true;
+        IsActive = true;
         _accumulatedTime = 0.0f;
     }
 
     public void Stop()
     {
-        _isActive = false;
+        IsActive = false;
     }
 
     public void Reset()
@@ -30,11 +29,14 @@ public class TickRegulator
         _accumulatedTime = 0.0f;
     }
 
-    public void Update(float deltaTime) => _accumulatedTime += deltaTime;
+    public void Update(float deltaTime)
+    {
+        _accumulatedTime += deltaTime;
+    }
 
     public bool IsReady()
     {
-        if (!_isActive)
+        if (!IsActive)
             return false;
 
         if (_accumulatedTime >= _updateTime)
@@ -42,12 +44,13 @@ public class TickRegulator
             _accumulatedTime -= _updateTime;
             return true;
         }
+
         return false;
     }
 
     public bool IsReady(float deltaTime, out int dueCount)
     {
-        if (!_isActive)
+        if (!IsActive)
         {
             dueCount = 0;
             return false;

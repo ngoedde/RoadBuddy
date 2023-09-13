@@ -1,18 +1,18 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-    <RootNamespace>RB.Core.Net</RootNamespace>
-  </PropertyGroup>
+    <PropertyGroup>
+        <TargetFramework>net7.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <RootNamespace>RB.Core.Net</RootNamespace>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\RB.Core.Net.Common\RB.Core.Net.Common.csproj" />
-  </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\RB.Core.Net.Common\RB.Core.Net.Common.csproj"/>
+    </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Serilog" Version="3.0.1" />
-  </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Serilog" Version="3.0.1"/>
+    </ItemGroup>
 
 </Project>

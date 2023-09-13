@@ -1,5 +1,4 @@
-﻿
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 
 namespace RB.Core.Net.Common.Protocol.KeyExchange;
 

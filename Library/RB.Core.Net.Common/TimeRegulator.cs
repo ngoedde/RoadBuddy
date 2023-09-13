@@ -2,27 +2,26 @@
 
 public class TimeRegulator
 {
-    private bool _isActive;
-    private float _accumulatedTime;
     private readonly float _updateTime;
-
-    public bool IsActive => _isActive;
+    private float _accumulatedTime;
 
     public TimeRegulator(float updateTime)
     {
-        _isActive = true;
+        IsActive = true;
         _updateTime = updateTime;
     }
 
+    public bool IsActive { get; private set; }
+
     public void Start()
     {
-        _isActive = true;
+        IsActive = true;
         _accumulatedTime = 0.0f;
     }
 
     public void Stop()
     {
-        _isActive = false;
+        IsActive = false;
     }
 
     public void Reset()
@@ -32,7 +31,7 @@ public class TimeRegulator
 
     public bool IsReady(float deltaTime)
     {
-        if (!_isActive)
+        if (!IsActive)
             return false;
 
         _accumulatedTime += deltaTime;

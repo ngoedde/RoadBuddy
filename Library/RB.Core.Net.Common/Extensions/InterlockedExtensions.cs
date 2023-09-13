@@ -1,6 +1,4 @@
-﻿using System.Threading;
-
-namespace RB.Core.Net.Common.Extensions;
+﻿namespace RB.Core.Net.Common.Extensions;
 
 public static class InterlockedExtensions
 {
@@ -12,8 +10,7 @@ public static class InterlockedExtensions
             initialValue = location;
             if (initialValue >= comparison)
                 return false;
-        }
-        while (Interlocked.CompareExchange(ref location, newValue, initialValue) != initialValue);
+        } while (Interlocked.CompareExchange(ref location, newValue, initialValue) != initialValue);
 
         return true;
     }
@@ -26,8 +23,7 @@ public static class InterlockedExtensions
             initialValue = location;
             if (initialValue >= comparison)
                 return false;
-        }
-        while (Interlocked.CompareExchange(ref location, newValue, initialValue) != initialValue);
+        } while (Interlocked.CompareExchange(ref location, newValue, initialValue) != initialValue);
 
         return true;
     }
@@ -40,8 +36,7 @@ public static class InterlockedExtensions
             initialValue = location;
             if (initialValue >= comparison)
                 return false;
-        }
-        while (Interlocked.CompareExchange(ref location, newValue, initialValue) != initialValue);
+        } while (Interlocked.CompareExchange(ref location, newValue, initialValue) != initialValue);
 
         return true;
     }
@@ -54,8 +49,7 @@ public static class InterlockedExtensions
             initialValue = location;
             if (initialValue >= comparison)
                 return false;
-        }
-        while (Interlocked.CompareExchange(ref location, newValue, initialValue) != initialValue);
+        } while (Interlocked.CompareExchange(ref location, newValue, initialValue) != initialValue);
 
         return true;
     }
@@ -68,8 +62,7 @@ public static class InterlockedExtensions
             initialValue = location;
             if (initialValue >= comparison)
                 return false;
-        }
-        while (Interlocked.CompareExchange(ref location, newValue, initialValue) != initialValue);
+        } while (Interlocked.CompareExchange(ref location, newValue, initialValue) != initialValue);
 
         return true;
     }
@@ -82,8 +75,7 @@ public static class InterlockedExtensions
             initialValue = location;
             if (initialValue >= comparison)
                 return false;
-        }
-        while (Interlocked.CompareExchange(ref location, newValue, initialValue) != initialValue);
+        } while (Interlocked.CompareExchange(ref location, newValue, initialValue) != initialValue);
 
         return true;
     }
@@ -96,8 +88,8 @@ public static class InterlockedExtensions
             initialValue = location;
             if (initialValue <= comparison)
                 return false;
-        }
-        while (Interlocked.CompareExchange(ref location, newValue, initialValue) != initialValue);
+        } while (Interlocked.CompareExchange(ref location, newValue, initialValue) != initialValue);
+
         return true;
     }
 
@@ -109,8 +101,8 @@ public static class InterlockedExtensions
             initialValue = location;
             if (initialValue <= comparison)
                 return false;
-        }
-        while (Interlocked.CompareExchange(ref location, newValue, initialValue) != initialValue);
+        } while (Interlocked.CompareExchange(ref location, newValue, initialValue) != initialValue);
+
         return true;
     }
 }

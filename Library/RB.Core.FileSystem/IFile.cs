@@ -15,11 +15,10 @@ public interface IFile
 
     public DateTime CreateTime { get; }
     public DateTime ModifyTime { get; }
-    
+
     #endregion
 
     #region Methods
-    
 
     public IFileReader OpenRead();
 

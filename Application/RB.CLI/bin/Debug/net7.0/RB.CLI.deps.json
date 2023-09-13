@@ -13,6 +13,7 @@
           "Microsoft.Extensions.Configuration.Json": "7.0.0",
           "Microsoft.Extensions.DependencyInjection": "7.0.0",
           "Microsoft.Extensions.Options.ConfigurationExtensions": "7.0.0",
+          "RB.Bot": "1.0.0",
           "RB.Core": "1.0.0",
           "RB.Core.Net": "1.0.0",
           "RB.Game.Client": "1.0.0",
@@ -219,6 +220,11 @@
         }
       },
       "RB.Bot/1.0.0": {
+        "dependencies": {
+          "Microsoft.Extensions.Configuration.Abstractions": "7.0.0",
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "7.0.0",
+          "RB.Core": "1.0.0"
+        },
         "runtime": {
           "RB.Bot.dll": {}
         }
@@ -226,7 +232,6 @@
       "RB.Core/1.0.0": {
         "dependencies": {
           "Microsoft.Extensions.DependencyInjection.Abstractions": "7.0.0",
-          "RB.Bot": "1.0.0",
           "RB.Core.Net": "1.0.0",
           "RB.Core.Net.Common": "1.0.0",
           "RB.Game": "1.0.0",
@@ -265,6 +270,7 @@
       },
       "RB.Game/1.0.0": {
         "dependencies": {
+          "RB.Core.Net.Common": "1.0.0",
           "Serilog": "3.0.1"
         },
         "runtime": {
@@ -278,6 +284,7 @@
           "Microsoft.Extensions.DependencyInjection.Abstractions": "7.0.0",
           "Microsoft.Extensions.Options": "7.0.1",
           "RB.Core.FileSystem": "1.0.0",
+          "RB.Game": "1.0.0",
           "Serilog": "3.0.1"
         },
         "runtime": {

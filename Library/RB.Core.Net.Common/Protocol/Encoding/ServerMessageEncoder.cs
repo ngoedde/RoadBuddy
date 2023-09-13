@@ -7,12 +7,12 @@ public class ServerMessageEncoder : IMessageEncoder
 {
     private readonly IMessageEncryptor _encrypter;
 
-    public static IMessageEncoder Shared { get; } = new ServerMessageEncoder(MessageEncryptor.Shared);
-
     public ServerMessageEncoder(IMessageEncryptor encrypter)
     {
         _encrypter = encrypter;
     }
+
+    public static IMessageEncoder Shared { get; } = new ServerMessageEncoder(MessageEncryptor.Shared);
 
     public EncodeResult Encode(IMessageEncodingContext context, Message msg)
     {

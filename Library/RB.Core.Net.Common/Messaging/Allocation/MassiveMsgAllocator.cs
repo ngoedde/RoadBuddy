@@ -6,13 +6,13 @@ public class MassiveMsgAllocator : IMassiveMsgAllocator
 {
     private readonly IMessageAllocator _msgAllocator;
 
-    public int Id { get; set; }
-
     public MassiveMsgAllocator(int id, IMessageAllocator msgAllocator)
     {
-        this.Id = id;
+        Id = id;
         _msgAllocator = msgAllocator;
     }
+
+    public int Id { get; set; }
 
     public MassiveMsg NewMassiveMsg(
         [CallerMemberName] string? memberName = null,
@@ -28,23 +28,23 @@ public class MassiveMsgAllocator : IMassiveMsgAllocator
         [CallerFilePath] string? filePath = null,
         [CallerLineNumber] int lineNumber = -1)
     {
-        var msg = this.NewMassiveMsg(memberName, filePath, lineNumber);
+        var msg = NewMassiveMsg(memberName, filePath, lineNumber);
         msg.ID = id;
-        msg.SenderID = this.Id;
-        msg.ReceiverID = this.Id;
+        msg.SenderID = Id;
+        msg.ReceiverID = Id;
         return msg;
     }
 
     public MassiveMsg NewMassiveMsg(
-    MessageID id,
-    int receiverID = -1,
-    [CallerMemberName] string? memberName = null,
-    [CallerFilePath] string? filePath = null,
-    [CallerLineNumber] int lineNumber = -1)
+        MessageID id,
+        int receiverID = -1,
+        [CallerMemberName] string? memberName = null,
+        [CallerFilePath] string? filePath = null,
+        [CallerLineNumber] int lineNumber = -1)
     {
-        var msg = this.NewMassiveMsg(memberName, filePath, lineNumber);
+        var msg = NewMassiveMsg(memberName, filePath, lineNumber);
         msg.ID = id;
-        msg.SenderID = this.Id;
+        msg.SenderID = Id;
         msg.ReceiverID = receiverID;
         return msg;
     }

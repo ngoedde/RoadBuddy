@@ -2,11 +2,12 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using RB.Bot;
 using RB.CLI;
 using RB.CLI.Connector;
 using RB.Core;
+using RB.Core.Config;
 using Serilog;
-using AppConfig = RB.Core.Config.AppConfig;
 
 #region boot
 
@@ -14,6 +15,7 @@ var services = new ServiceCollection();
 var configuration = new ConfigurationBuilder()
     .AddJsonFile(Path.Combine("Config", "AppConfig.json"))
     .AddJsonFile(Path.Combine("Config", "FileSystem.json"))
+    .AddJsonFile(Path.Combine("Config", "BotConfig.json"))
     .Build();
 
 ConfigureLogger();
@@ -32,9 +34,10 @@ static void ConfigureServices(IServiceCollection services, IConfiguration config
 {
     //Config
     services.Configure<AppConfig>(configuration.Bind);
-    
+
     //Bot Core
-    services.AddCoreServices(configuration);
+    services.AddRoadBuddyKernel(configuration);
+    services.AddBotModules(configuration);
 
     //Application
     services.AddSingleton<IRoadBuddyApp, App>();

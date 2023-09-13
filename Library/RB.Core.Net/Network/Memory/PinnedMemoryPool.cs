@@ -1,12 +1,11 @@
-﻿using System;
-using System.Buffers;
+﻿using System.Buffers;
 using System.Collections.Concurrent;
 
 namespace RB.Core.Net.Network.Memory;
 
 public class PinnedMemoryPool : MemoryPool<byte>
 {
-    private readonly ConcurrentQueue<PinnedMemoryPoolBlock> _blocks = new ConcurrentQueue<PinnedMemoryPoolBlock>();
+    private readonly ConcurrentQueue<PinnedMemoryPoolBlock> _blocks = new();
 
     public bool Disposed { get; private set; }
 
@@ -14,16 +13,16 @@ public class PinnedMemoryPool : MemoryPool<byte>
 
     public override IMemoryOwner<byte> Rent(int minBufferSize = -1)
     {
-        if (this.Disposed)
+        if (Disposed)
             throw new ObjectDisposedException(nameof(PinnedMemoryPool));
 
-        if (minBufferSize > this.MaxBufferSize)
+        if (minBufferSize > MaxBufferSize)
             throw new ArgumentOutOfRangeException(nameof(minBufferSize));
 
         if (minBufferSize < 0)
-            minBufferSize = this.MaxBufferSize;
+            minBufferSize = MaxBufferSize;
 
-        if (!_blocks.TryDequeue(out PinnedMemoryPoolBlock? block))
+        if (!_blocks.TryDequeue(out var block))
             block = new PinnedMemoryPoolBlock(this, minBufferSize);
 
         return block;
@@ -31,7 +30,7 @@ public class PinnedMemoryPool : MemoryPool<byte>
 
     internal void Return(PinnedMemoryPoolBlock block)
     {
-        if (this.Disposed)
+        if (Disposed)
             return;
 
         _blocks.Enqueue(block);
@@ -39,11 +38,11 @@ public class PinnedMemoryPool : MemoryPool<byte>
 
     protected override void Dispose(bool disposing)
     {
-        if (this.Disposed)
+        if (Disposed)
             return;
 
         // Free your own state (unmanaged objects).
-        this.Disposed = true;
+        Disposed = true;
 
         if (!disposing)
             return;

@@ -24,5 +24,6 @@ public interface IMessageWriter
 
     bool TrySerialize<T>(in T serializeable) where T : IMessageSerializer;
 
-    bool TrySerialize<T>(IReadOnlyCollection<T> collection, IMessageCollectionSerializer collectionSerializer) where T : IMessageSerializer;
+    bool TrySerialize<T>(IReadOnlyCollection<T> collection, IMessageCollectionSerializer collectionSerializer)
+        where T : IMessageSerializer;
 }

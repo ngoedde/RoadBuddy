@@ -14,11 +14,12 @@ public static class KeyExchangeHelper
         while (X != 0)
         {
             if ((X & 1) > 0)
-                result = (mult * result) % P;
+                result = mult * result % P;
 
             X >>= 1;
-            mult = (mult * mult) % P;
+            mult = mult * mult % P;
         }
+
         return (uint)result;
     }
 

@@ -1,8 +1,7 @@
-﻿using RB.Core.Net.Common;
-using RB.Core.Net.Common.Messaging;
-
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Net.Sockets;
+using RB.Core.Net.Common;
+using RB.Core.Net.Common.Messaging;
 using RB.Core.Net.Network.Memory;
 using RB.Core.Net.Network.Memory.EventArgs;
 
@@ -22,7 +21,7 @@ public class NetSender : NetIOHandler, INetSender
         _sent = sent;
 
         _memoryPool = new PinnedMemoryPool();
-        _sendEventArgsPool = new NetEventArgsPool<SendNetEventArgs>(this.SendCompleted);
+        _sendEventArgsPool = new NetEventArgsPool<SendNetEventArgs>(SendCompleted);
         _sendEventArgsPool.Allocate(1024); // TODO: From config
     }
 
@@ -44,15 +43,15 @@ public class NetSender : NetIOHandler, INetSender
                 return true;
 
             // The I/O operation completed synchronously, SocketAsyncEventArgs.Completed event will not be raised.
-            this.ReportSyncIO();
-            this.SendCompleted(session.Socket, args);
+            ReportSyncIO();
+            SendCompleted(session.Socket, args);
             return true;
         }
         catch (Exception ex)
         {
             Console.WriteLine(ex);
 
-            this.OnDisconnect(session, DisconnectReason.SendError);
+            OnDisconnect(session, DisconnectReason.SendError);
             _sendEventArgsPool.Return(args);
             return false;
         }
@@ -60,8 +59,8 @@ public class NetSender : NetIOHandler, INetSender
 
     private void SendCompleted(object? sender, SocketAsyncEventArgs e)
     {
-        this.ReportAsyncIO();
-        this.SendCompleted(sender, (SendNetEventArgs)e);
+        ReportAsyncIO();
+        SendCompleted(sender, (SendNetEventArgs)e);
     }
 
     private void SendCompleted(object? sender, SendNetEventArgs args)
@@ -75,9 +74,9 @@ public class NetSender : NetIOHandler, INetSender
         }
 
         if (args.BytesTransferred == 0 /*FIN*/ || args.SocketError is SocketError.ConnectionReset
-                                                                   or SocketError.TimedOut)
+                or SocketError.TimedOut)
         {
-            this.OnDisconnect(args.Session, DisconnectReason.ClosedByPeer);
+            OnDisconnect(args.Session, DisconnectReason.ClosedByPeer);
             _sendEventArgsPool.Return(args);
             return;
         }
@@ -86,18 +85,22 @@ public class NetSender : NetIOHandler, INetSender
         {
             Console.WriteLine($"Unhandled SocketError in {nameof(this.SendCompleted)}: {args.SocketError}");
 
-            this.OnDisconnect(args.Session, DisconnectReason.SendError);
+            OnDisconnect(args.Session, DisconnectReason.SendError);
             _sendEventArgsPool.Return(args);
             return;
         }
 
-        this.OnSent(args.Session, args.BytesTransferred);
+        OnSent(args.Session, args.BytesTransferred);
         _sendEventArgsPool.Return(args);
     }
 
     protected virtual void OnSent(Session session, int bytesTransferred)
-        => _sent?.Invoke(session, bytesTransferred);
+    {
+        _sent?.Invoke(session, bytesTransferred);
+    }
 
     protected virtual void OnDisconnect(Session session, DisconnectReason reason)
-        => _disconnector.Disconnect(session, reason);
+    {
+        _disconnector.Disconnect(session, reason);
+    }
 }

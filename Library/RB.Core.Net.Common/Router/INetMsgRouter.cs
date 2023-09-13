@@ -1,5 +1,4 @@
-﻿
-namespace RB.Core.Net.Common.Router;
+﻿namespace RB.Core.Net.Common.Router;
 
 public interface INetMsgRouter
 {

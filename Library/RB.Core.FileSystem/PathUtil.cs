@@ -5,7 +5,7 @@ public static class PathUtil
     public static char PathSeparator = '\\';
 
     /// <summary>
-    /// Returns the parent path to the folder or file at the given path.
+    ///     Returns the parent path to the folder or file at the given path.
     /// </summary>
     /// <param name="path">The path to determine the parent path.</param>
     /// <returns>The parent path to the given path.</returns>
@@ -15,7 +15,7 @@ public static class PathUtil
             return string.Empty;
 
         path = Prepare(path);
-        
+
         var paths = path.Split(PathSeparator);
         var pathsWithoutLast = paths[..^1];
 
@@ -23,19 +23,19 @@ public static class PathUtil
     }
 
     /// <summary>
-    /// Returns the file or folder name from the path.
+    ///     Returns the file or folder name from the path.
     /// </summary>
     /// <param name="path">The path to get the file or folder name from.</param>
     /// <returns>The file name.</returns>
     public static string GetFileName(string path)
     {
         path = Prepare(path);
-        
+
         return string.IsNullOrEmpty(path) ? string.Empty : path.Split(PathSeparator).Last();
     }
 
     /// <summary>
-    /// Appends the given folder or filename to the path. 
+    ///     Appends the given folder or filename to the path.
     /// </summary>
     /// <param name="path"></param>
     /// <param name="folderOrFileName"></param>
@@ -45,11 +45,11 @@ public static class PathUtil
         if (!string.IsNullOrEmpty(path))
             path = Prepare(path);
 
-        return path + folderOrFileName;
+        return path + PathSeparator + folderOrFileName;
     }
 
     /// <summary>
-    /// Returns a ready to use path string.
+    ///     Returns a ready to use path string.
     /// </summary>
     /// <param name="path"></param>
     /// <returns></returns>

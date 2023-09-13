@@ -19,7 +19,7 @@ public class VersionInfoService : IVersionInfoService
             throw new NotLoadedException(clientVersionResult.Path);
 
         _version = clientVersionResult.Value;
-        
+
         return _version.Value;
     }
 

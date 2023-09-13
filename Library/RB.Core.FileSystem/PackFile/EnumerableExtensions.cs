@@ -8,7 +8,7 @@ public static class EnumerableExtensions
     {
         return blocks.SelectMany(block => block.Entries);
     }
-    
+
     public static PackEntry? GetEntry(this IEnumerable<PackBlock> blocks, string name)
     {
         return GetEntries(blocks).FirstOrDefault(e => e.Name == name);

@@ -5,9 +5,15 @@ namespace RB.Core.Net.Common.Extensions;
 
 public static class SocketExtensions
 {
-    public static string GetRemoteAddress(this Socket socket) => socket.RemoteEndPoint is not IPEndPoint ipEndPoint ? string.Empty : ipEndPoint.Address.ToString();
+    public static string GetRemoteAddress(this Socket socket)
+    {
+        return socket.RemoteEndPoint is not IPEndPoint ipEndPoint ? string.Empty : ipEndPoint.Address.ToString();
+    }
 
-    public static int GetRemotePort(this Socket socket) => socket.RemoteEndPoint is not IPEndPoint ipEndPoint ? -1 : ipEndPoint.Port;
+    public static int GetRemotePort(this Socket socket)
+    {
+        return socket.RemoteEndPoint is not IPEndPoint ipEndPoint ? -1 : ipEndPoint.Port;
+    }
 
     public static void Optimize(this Socket socket)
     {

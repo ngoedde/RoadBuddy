@@ -1,8 +1,7 @@
-﻿using RB.Core.Net.Common;
-
-using System.Buffers;
+﻿using System.Buffers;
 using System.Diagnostics;
 using System.Net.Sockets;
+using RB.Core.Net.Common;
 using RB.Core.Net.Network.Memory;
 using RB.Core.Net.Network.Memory.EventArgs;
 
@@ -11,10 +10,10 @@ namespace RB.Core.Net.Network.Tcp;
 internal class NetReceiver : NetIOHandler, INetReceiver
 {
     private readonly INetDisconnecter _disconnector;
-    private readonly INetEventArgsPool<ReceiveNetEventArgs> _receiveEventArgsPool;
     private readonly MemoryPool<byte> _memoryPool;
 
     private readonly NetReceiveEventHandler _received;
+    private readonly INetEventArgsPool<ReceiveNetEventArgs> _receiveEventArgsPool;
 
     public NetReceiver(INetDisconnecter disconnector, NetReceiveEventHandler received)
     {
@@ -23,7 +22,7 @@ internal class NetReceiver : NetIOHandler, INetReceiver
 
         _memoryPool = new PinnedMemoryPool();
         //_receiveEventArgsPool = new NetEventArgsPool<ReceiveNetEventArgs>(this.ReceiveCompleted);
-        _receiveEventArgsPool = new ReceiveNetEventArgsPool(this.ReceiveCompleted);
+        _receiveEventArgsPool = new ReceiveNetEventArgsPool(ReceiveCompleted);
         _receiveEventArgsPool.Allocate(1024); // TODO: From config
     }
 
@@ -41,22 +40,22 @@ internal class NetReceiver : NetIOHandler, INetReceiver
                 return;
 
             // The I/O operation completed synchronously, SocketAsyncEventArgs.Completed event will not be raised.
-            this.ReportSyncIO();
-            this.ReceiveCompleted(session.Socket, args);
+            ReportSyncIO();
+            ReceiveCompleted(session.Socket, args);
         }
         catch (Exception ex)
         {
             Console.WriteLine(ex);
 
-            this.OnDisconnect(session, DisconnectReason.ReceiveError);
+            OnDisconnect(session, DisconnectReason.ReceiveError);
             _receiveEventArgsPool.Return(args);
         }
     }
 
     private void ReceiveCompleted(object? sender, SocketAsyncEventArgs args)
     {
-        this.ReportAsyncIO();
-        this.ReceiveCompleted(sender, (ReceiveNetEventArgs)args);
+        ReportAsyncIO();
+        ReceiveCompleted(sender, (ReceiveNetEventArgs)args);
     }
 
     private void ReceiveCompleted(object? sender, ReceiveNetEventArgs args)
@@ -71,9 +70,9 @@ internal class NetReceiver : NetIOHandler, INetReceiver
 
         // Closed by peer...
         if (args.BytesTransferred == 0 /*FIN*/ || args.SocketError is SocketError.ConnectionReset
-                                                                   or SocketError.TimedOut)
+                or SocketError.TimedOut)
         {
-            this.OnDisconnect(args.Session, DisconnectReason.ClosedByPeer);
+            OnDisconnect(args.Session, DisconnectReason.ClosedByPeer);
             _receiveEventArgsPool.Return(args);
             return;
         }
@@ -82,7 +81,7 @@ internal class NetReceiver : NetIOHandler, INetReceiver
         {
             Console.WriteLine($"Unhandled SocketError in {nameof(this.ReceiveCompleted)}: {args.SocketError}");
 
-            this.OnDisconnect(args.Session, DisconnectReason.ReceiveError);
+            OnDisconnect(args.Session, DisconnectReason.ReceiveError);
             _receiveEventArgsPool.Return(args);
             return;
         }
@@ -90,18 +89,22 @@ internal class NetReceiver : NetIOHandler, INetReceiver
         var session = args.Session;
         try
         {
-            this.OnReceived(session, args.MemoryBuffer, args.BytesTransferred);
+            OnReceived(session, args.MemoryBuffer, args.BytesTransferred);
         }
         finally
         {
             _receiveEventArgsPool.Return(args);
-            this.Receive(session);
+            Receive(session);
         }
     }
 
     protected virtual void OnReceived(Session session, Memory<byte> buffer, int bytesTransferred)
-        => _received?.Invoke(session, buffer, bytesTransferred);
+    {
+        _received?.Invoke(session, buffer, bytesTransferred);
+    }
 
     protected virtual void OnDisconnect(Session session, DisconnectReason reason)
-        => _disconnector.Disconnect(session, reason);
+    {
+        _disconnector.Disconnect(session, reason);
+    }
 }

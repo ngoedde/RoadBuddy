@@ -1,26 +1,23 @@
-﻿using RB.Core.Net.Common;
-
-using System;
-using System.Diagnostics;
-using System.Net.Sockets;
+﻿using System.Net.Sockets;
+using RB.Core.Net.Common;
 using RB.Core.Net.Network.Memory;
 using RB.Core.Net.Network.Memory.EventArgs;
+using Serilog;
 
 namespace RB.Core.Net.Network.Tcp;
 
 public class NetDisconnecter : NetIOHandler, INetDisconnecter
 {
-    private readonly ISocketPool _socketPool;
-    private readonly INetEventArgsPool<DisconnectNetEventArgs> _disconnectEventArgsPool;
-
     private readonly NetDisconnectEventHandler _disconnected;
+    private readonly INetEventArgsPool<DisconnectNetEventArgs> _disconnectEventArgsPool;
+    private readonly ISocketPool _socketPool;
 
     public NetDisconnecter(ISocketPool socketPool, NetDisconnectEventHandler disconnected)
     {
         _socketPool = socketPool;
         _disconnected = disconnected;
 
-        _disconnectEventArgsPool = new NetEventArgsPool<DisconnectNetEventArgs>(this.DisconnectCompleted);
+        _disconnectEventArgsPool = new NetEventArgsPool<DisconnectNetEventArgs>(DisconnectCompleted);
         _disconnectEventArgsPool.Allocate(1024); // TODO: From config
     }
 
@@ -40,21 +37,20 @@ public class NetDisconnecter : NetIOHandler, INetDisconnecter
                 return;
 
             // The I/O operation completed synchronously, SocketAsyncEventArgs.Completed event will not be raised.
-            this.ReportSyncIO();
-            this.DisconnectCompleted(session.Socket, args);
+            ReportSyncIO();
+            DisconnectCompleted(session.Socket, args);
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex);
-
+            Log.Debug($"Socket error: {ex.Message}");
             _disconnectEventArgsPool.Return(args);
         }
     }
 
     private void DisconnectCompleted(object? sender, SocketAsyncEventArgs e)
     {
-        this.ReportAsyncIO();
-        this.DisconnectCompleted((DisconnectNetEventArgs)e);
+        ReportAsyncIO();
+        DisconnectCompleted((DisconnectNetEventArgs)e);
     }
 
     private void DisconnectCompleted(DisconnectNetEventArgs args)
@@ -83,7 +79,7 @@ public class NetDisconnecter : NetIOHandler, INetDisconnecter
 
         try
         {
-            this.OnDisconnected(args.Session, args.Reason);
+            OnDisconnected(args.Session, args.Reason);
         }
         finally
         {
@@ -93,5 +89,8 @@ public class NetDisconnecter : NetIOHandler, INetDisconnecter
         }
     }
 
-    protected virtual void OnDisconnected(Session session, DisconnectReason reason) => _disconnected.Invoke(session, reason);
+    protected virtual void OnDisconnected(Session session, DisconnectReason reason)
+    {
+        _disconnected.Invoke(session, reason);
+    }
 }

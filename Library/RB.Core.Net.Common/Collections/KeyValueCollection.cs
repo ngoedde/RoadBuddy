@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 
 namespace RB.Core.Net.Common.Collections;
@@ -9,10 +8,6 @@ public class KeyValueCollection<TKey, TValue> : ICollection<TValue>, IReadOnlyCo
     where TValue : IKeyValue<TKey>
 {
     private readonly IDictionary<TKey, TValue> _inner;
-
-    public int Count => _inner.Count;
-
-    public bool IsReadOnly => false;
 
     public KeyValueCollection() : this(0, null)
     {
@@ -32,31 +27,65 @@ public class KeyValueCollection<TKey, TValue> : ICollection<TValue>, IReadOnlyCo
         _inner = dictionary;
     }
 
-    public void Add(TValue value) => _inner.Add(value.Key, value);
-
-    public void Remove(TKey key) => _inner.Remove(key);
-
-    public bool ContainsKey(TKey key) => _inner.ContainsKey(key);
-
-    public bool TryGetValue(TKey key, [MaybeNullWhen(false)] out TValue value) => _inner.TryGetValue(key, out value);
-
-    public void Clear() => _inner.Clear();
-
     public TValue this[TKey key]
     {
         get => _inner[key];
         set => _inner[key] = value;
     }
 
-    IEnumerator<TValue> IEnumerable<TValue>.GetEnumerator() => _inner.Values.GetEnumerator();
+    public int Count => _inner.Count;
 
-    IEnumerator IEnumerable.GetEnumerator() => _inner.Values.GetEnumerator();
+    public bool IsReadOnly => false;
 
-    public bool Contains(TValue item) => _inner.ContainsKey(item.Key);
+    public void Add(TValue value)
+    {
+        _inner.Add(value.Key, value);
+    }
 
-    public void CopyTo(TValue[] array, int arrayIndex) => _inner.Values.CopyTo(array, arrayIndex);
+    public void Clear()
+    {
+        _inner.Clear();
+    }
 
-    public bool Remove(TValue item) => _inner.Remove(item.Key);
+    IEnumerator<TValue> IEnumerable<TValue>.GetEnumerator()
+    {
+        return _inner.Values.GetEnumerator();
+    }
+
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return _inner.Values.GetEnumerator();
+    }
+
+    public bool Contains(TValue item)
+    {
+        return _inner.ContainsKey(item.Key);
+    }
+
+    public void CopyTo(TValue[] array, int arrayIndex)
+    {
+        _inner.Values.CopyTo(array, arrayIndex);
+    }
+
+    public bool Remove(TValue item)
+    {
+        return _inner.Remove(item.Key);
+    }
+
+    public void Remove(TKey key)
+    {
+        _inner.Remove(key);
+    }
+
+    public bool ContainsKey(TKey key)
+    {
+        return _inner.ContainsKey(key);
+    }
+
+    public bool TryGetValue(TKey key, [MaybeNullWhen(false)] out TValue value)
+    {
+        return _inner.TryGetValue(key, out value);
+    }
 
     public void AddRange(IEnumerable<TValue> values)
     {

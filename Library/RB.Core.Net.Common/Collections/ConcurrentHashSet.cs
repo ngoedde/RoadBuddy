@@ -1,6 +1,5 @@
 ﻿using System.Collections;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 
 namespace RB.Core.Net.Common.Collections;
 
@@ -23,15 +22,33 @@ public class ConcurrentHashSet<T> : IEnumerable<T>
 
     public bool IsEmpty => _map.IsEmpty;
 
-    public bool TryAdd(T item) => _map.TryAdd(item, null!);
+    public IEnumerator<T> GetEnumerator()
+    {
+        return _map.Keys.GetEnumerator();
+    }
 
-    public void Clear() => _map.Clear();
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return _map.Keys.GetEnumerator();
+    }
 
-    public bool Contains(T item) => _map.ContainsKey(item);
+    public bool TryAdd(T item)
+    {
+        return _map.TryAdd(item, null!);
+    }
 
-    public bool TryRemove(T item) => _map.TryRemove(item, out _);
+    public void Clear()
+    {
+        _map.Clear();
+    }
 
-    public IEnumerator<T> GetEnumerator() => _map.Keys.GetEnumerator();
+    public bool Contains(T item)
+    {
+        return _map.ContainsKey(item);
+    }
 
-    IEnumerator IEnumerable.GetEnumerator() => _map.Keys.GetEnumerator();
+    public bool TryRemove(T item)
+    {
+        return _map.TryRemove(item, out _);
+    }
 }

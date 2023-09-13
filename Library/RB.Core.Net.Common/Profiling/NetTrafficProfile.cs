@@ -2,11 +2,10 @@
 
 public class NetTrafficProfile
 {
-    public int ReceivedSegements;
-    public int SentSegments;
-
     public long ReceivedBytes;
+    public int ReceivedSegements;
     public long SentBytes;
+    public int SentSegments;
 
     public void ReportReceive(int value)
     {

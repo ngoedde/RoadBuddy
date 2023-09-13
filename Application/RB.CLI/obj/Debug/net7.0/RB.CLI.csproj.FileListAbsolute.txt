@@ -47,3 +47,4 @@
 /Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Application/RB.CLI/bin/Debug/net7.0/Serilog.dll
 /Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Application/RB.CLI/bin/Debug/net7.0/Serilog.Sinks.Console.dll
 /Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Application/RB.CLI/bin/Debug/net7.0/Serilog.Sinks.File.dll
+/Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Application/RB.CLI/bin/Debug/net7.0/Config/BotConfig.json

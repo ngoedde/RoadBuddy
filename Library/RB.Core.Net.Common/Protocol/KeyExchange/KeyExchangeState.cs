@@ -5,5 +5,5 @@ public enum KeyExchangeState : byte
     Uninitialized,
     Initialized,
     Challenged,
-    Accepted,
+    Accepted
 }

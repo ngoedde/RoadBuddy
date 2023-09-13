@@ -1,14 +1,7 @@
 {
-  "Overrides": {
-    "Version": 21,
-    "#ContentId": 22,
-    "#Gateway": {
-      "Host": "157.90.116.105",
-      "Port": 15779
-    },
-    "#Agent": {
-      "Host": "157.90.116.105",
-      "Port": 15780
-    }
+  "Proxy": {
+    "Enabled": false,
+    "Host": "0.0.0.0",
+    "Port": 18000
   }
 }

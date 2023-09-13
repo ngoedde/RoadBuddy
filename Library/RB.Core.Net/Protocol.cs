@@ -1,4 +1,5 @@
-﻿using RB.Core.Net.Common;
+﻿using System.Diagnostics.CodeAnalysis;
+using RB.Core.Net.Common;
 using RB.Core.Net.Common.Messaging;
 using RB.Core.Net.Common.Messaging.Allocation;
 using RB.Core.Net.Common.Messaging.Posting;
@@ -7,23 +8,20 @@ using RB.Core.Net.Common.Protocol.Decoding;
 using RB.Core.Net.Common.Protocol.Encoding;
 using RB.Core.Net.Common.Protocol.KeyExchange;
 
-using System.Diagnostics.CodeAnalysis;
-
 namespace RB.Core.Net;
 
 public abstract class Protocol : IProtocol
 {
-    public KeyExchangeCompletedEventHandler? Accepted { get; set; }
-
     protected readonly IMessageAllocator _allocator;
-    protected readonly IMessagePoster _poster;
+    private readonly IMessageBuilder _builder;
 
     protected readonly IProtocolContext _context;
-    private readonly IMessageBuilder _builder;
     private readonly IMessageDecoder _decoder;
     private readonly IMessageEncoder _encoder;
+    protected readonly IMessagePoster _poster;
 
-    protected Protocol(IMessageAllocator allocator, IMessagePoster poster, IMessageDecoder decoder, IMessageEncoder encoder)
+    protected Protocol(IMessageAllocator allocator, IMessagePoster poster, IMessageDecoder decoder,
+        IMessageEncoder encoder)
     {
         _allocator = allocator;
         _poster = poster;
@@ -34,34 +32,55 @@ public abstract class Protocol : IProtocol
         _encoder = encoder;
     }
 
-    public bool Receive(Span<byte> segment) => _builder.Build(segment);
+    public KeyExchangeCompletedEventHandler? Accepted { get; set; }
 
-    public bool TryGetMessage([MaybeNullWhen(false)] out Message message) => _builder.TryGet(out message);
+    public bool Receive(Span<byte> segment)
+    {
+        return _builder.Build(segment);
+    }
 
-    public bool Decode(Message msg) => _decoder.Decode(_context, msg) == DecodeResult.Success;
-    public bool Encode(Message msg) => _encoder.Encode(_context, msg) == EncodeResult.Success;
+    public bool TryGetMessage([MaybeNullWhen(false)] out Message message)
+    {
+        return _builder.TryGet(out message);
+    }
 
-    public bool SetTrusted(bool trusted) => _context.IsTrusted = trusted;
+    public bool Decode(Message msg)
+    {
+        return _decoder.Decode(_context, msg) == DecodeResult.Success;
+    }
 
-    protected abstract KeyExchangeResult OnKeyExchangeReq(Message msg);
+    public bool Encode(Message msg)
+    {
+        return _encoder.Encode(_context, msg) == EncodeResult.Success;
+    }
 
-    protected abstract KeyExchangeResult OnKeyExchangeAck(Message msg);
-
-    protected virtual void OnKeyExchangeAccepted() => this.Accepted?.Invoke();
+    public bool SetTrusted(bool trusted)
+    {
+        return _context.IsTrusted = trusted;
+    }
 
     public bool ProcessReq(Message msg)
     {
-        var result = this.OnKeyExchangeReq(msg);
+        var result = OnKeyExchangeReq(msg);
         return result == KeyExchangeResult.Success;
     }
 
     public bool ProcessAck(Message msg)
     {
-        var result = this.OnKeyExchangeAck(msg);
+        var result = OnKeyExchangeAck(msg);
         return result == KeyExchangeResult.Success;
     }
 
     public abstract bool Initialize(int receiverId);
+
+    protected abstract KeyExchangeResult OnKeyExchangeReq(Message msg);
+
+    protected abstract KeyExchangeResult OnKeyExchangeAck(Message msg);
+
+    protected virtual void OnKeyExchangeAccepted()
+    {
+        Accepted?.Invoke();
+    }
 
     public bool PostKeyChallenge(int receiverId, uint localPublic, Span<byte> localSignature)
     {

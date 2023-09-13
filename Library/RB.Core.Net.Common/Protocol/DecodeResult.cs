@@ -7,5 +7,5 @@ public enum DecodeResult
     InvalidSequence,
     InvalidChecksum,
     InvalidMsgSize,
-    Unknown,
+    Unknown
 }

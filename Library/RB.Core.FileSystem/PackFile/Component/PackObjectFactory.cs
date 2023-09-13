@@ -1,5 +1,3 @@
-using System.Text;
-using RB.Core.FileSystem.PackFile.Cryptography;
 using RB.Core.FileSystem.PackFile.Struct;
 
 namespace RB.Core.FileSystem.PackFile.Component;

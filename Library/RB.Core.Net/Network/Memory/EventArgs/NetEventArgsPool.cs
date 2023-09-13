@@ -1,13 +1,13 @@
-﻿using RB.Core.Net.Common.Memory;
-
-using System.Net.Sockets;
+﻿using System.Net.Sockets;
 using System.Runtime.InteropServices;
+using RB.Core.Net.Common.Memory;
 
 namespace RB.Core.Net.Network.Memory.EventArgs;
 
 internal class ReceiveNetEventArgsPool : NetEventArgsPool<ReceiveNetEventArgs>
 {
-    public ReceiveNetEventArgsPool(EventHandler<SocketAsyncEventArgs> completedEventHandler) : base(completedEventHandler)
+    public ReceiveNetEventArgsPool(EventHandler<SocketAsyncEventArgs> completedEventHandler) : base(
+        completedEventHandler)
     {
     }
 
@@ -15,7 +15,7 @@ internal class ReceiveNetEventArgsPool : NetEventArgsPool<ReceiveNetEventArgs>
     {
         var result = base.Create();
 
-        var pinnedArray = GC.AllocateUninitializedArray<byte>(8192, pinned: true);
+        var pinnedArray = GC.AllocateUninitializedArray<byte>(8192, true);
         var memory = MemoryMarshal.CreateFromPinnedArray(pinnedArray, 0, pinnedArray.Length);
         result.SetBuffer(memory);
 

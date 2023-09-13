@@ -25,41 +25,48 @@ public class Message : MessageStream
     public const ushort HEADER_ENC_OFFSET = HEADER_OFFSET + 2;
     public const ushort HEADER_ENC_SIZE = HEADER_SIZE - HEADER_ENC_OFFSET;
     public const ushort HEADER_ENC_MASK = 0x8000;
+    private readonly Memory<byte> _memory;
+    private readonly IMessagePool _pool;
 
     private readonly ReferenceCounter _referenceCounter;
-    private readonly IMessagePool _pool;
-    private readonly Memory<byte> _memory;
 
-    public object _lock = new object();
+    public object _lock = new();
+
+    internal Message(IMessagePool pool, Memory<byte> memory)
+    {
+        _pool = pool;
+        _memory = memory;
+        _referenceCounter = new ReferenceCounter();
+        WritePosition = 6;
+        ReadPosition = 6;
+    }
 
     public MessageMeta Meta
     {
-        get => MemoryMarshal.Read<MessageMeta>(this.GetSpan(META_OFFSET, Unsafe.SizeOf<MessageMeta>()));
-        set => MemoryMarshal.Write(this.GetSpan(META_OFFSET, Unsafe.SizeOf<MessageMeta>()), ref value);
+        get => MemoryMarshal.Read<MessageMeta>(GetSpan(META_OFFSET, Unsafe.SizeOf<MessageMeta>()));
+        set => MemoryMarshal.Write(GetSpan(META_OFFSET, Unsafe.SizeOf<MessageMeta>()), ref value);
     }
 
     public ushort DataSize
     {
-        get
-        {
-            return (ushort)(MemoryMarshal.Read<ushort>(this.GetSpan(META_OFFSET, Unsafe.SizeOf<ushort>())) & ~HEADER_ENC_MASK);
-        }
+        get => (ushort)(MemoryMarshal.Read<ushort>(GetSpan(META_OFFSET, Unsafe.SizeOf<ushort>())) & ~HEADER_ENC_MASK);
         set
         {
-            var span = this.GetSpan(META_OFFSET, Unsafe.SizeOf<ushort>());
+            var span = GetSpan(META_OFFSET, Unsafe.SizeOf<ushort>());
             var size = (ushort)(value | (MemoryMarshal.Read<ushort>(span) & HEADER_ENC_MASK));
-            MemoryMarshal.Write(this.GetSpan(META_OFFSET, Unsafe.SizeOf<ushort>()), ref size);
+            MemoryMarshal.Write(GetSpan(META_OFFSET, Unsafe.SizeOf<ushort>()), ref size);
         }
     }
 
     public bool Encrypted
     {
-        get => (MemoryMarshal.Read<ushort>(this.GetSpan(META_OFFSET, Unsafe.SizeOf<ushort>())) & HEADER_ENC_MASK) != 0;
+        get => (MemoryMarshal.Read<ushort>(GetSpan(META_OFFSET, Unsafe.SizeOf<ushort>())) & HEADER_ENC_MASK) != 0;
         set
         {
-            var span = this.GetSpan(META_OFFSET, Unsafe.SizeOf<ushort>());
-            var size = (ushort)((MemoryMarshal.Read<ushort>(span) & ~HEADER_ENC_MASK) | (value ? HEADER_ENC_MASK : default));
-            MemoryMarshal.Write(this.GetSpan(META_OFFSET, Unsafe.SizeOf<ushort>()), ref size);
+            var span = GetSpan(META_OFFSET, Unsafe.SizeOf<ushort>());
+            var size = (ushort)((MemoryMarshal.Read<ushort>(span) & ~HEADER_ENC_MASK) |
+                                (value ? HEADER_ENC_MASK : default));
+            MemoryMarshal.Write(GetSpan(META_OFFSET, Unsafe.SizeOf<ushort>()), ref size);
         }
     }
 
@@ -69,8 +76,8 @@ public class Message : MessageStream
 
     public override MessageID ID
     {
-        get => MemoryMarshal.Read<MessageID>(this.GetSpan(ID_OFFSET, Unsafe.SizeOf<MessageID>()));
-        set => MemoryMarshal.Write(this.GetSpan(ID_OFFSET, Unsafe.SizeOf<MessageID>()), ref value);
+        get => MemoryMarshal.Read<MessageID>(GetSpan(ID_OFFSET, Unsafe.SizeOf<MessageID>()));
+        set => MemoryMarshal.Write(GetSpan(ID_OFFSET, Unsafe.SizeOf<MessageID>()), ref value);
     }
 
     public byte Sequence
@@ -85,40 +92,34 @@ public class Message : MessageStream
         set => _memory.Span[CHECKSUM_OFFSET] = value;
     }
 
-    public int RemainingRead => this.WritePosition - this.ReadPosition;
-    public int RemainingWrite => BUFFER_SIZE - this.WritePosition;
+    public int RemainingRead => WritePosition - ReadPosition;
+    public int RemainingWrite => BUFFER_SIZE - WritePosition;
     public bool IsRented { get; set; }
-
-    internal Message(IMessagePool pool, Memory<byte> memory)
-    {
-        _pool = pool;
-        _memory = memory;
-        _referenceCounter = new ReferenceCounter();
-        this.WritePosition = 6;
-        this.ReadPosition = 6;
-    }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void UpdateDataSize()
     {
         // Optimized data size update that keeps the encryption bit.
-        var metaSpan = this.GetSpan(META_OFFSET, Unsafe.SizeOf<ushort>());
+        var metaSpan = GetSpan(META_OFFSET, Unsafe.SizeOf<ushort>());
         var metaValue = MemoryMarshal.Read<ushort>(metaSpan);
-        if ((this.WritePosition - HEADER_SIZE) > (metaValue & ~HEADER_ENC_MASK))
+        if (WritePosition - HEADER_SIZE > (metaValue & ~HEADER_ENC_MASK))
         {
-            metaValue = (ushort)((this.WritePosition - HEADER_SIZE) | (metaValue & HEADER_ENC_MASK));
+            metaValue = (ushort)((WritePosition - HEADER_SIZE) | (metaValue & HEADER_ENC_MASK));
             MemoryMarshal.Write(metaSpan, ref metaValue);
         }
     }
 
-    public string ToLoggerString() => $"{this.ID} [{this.Meta} bytes]\n{this.HexDump()}";
+    public string ToLoggerString()
+    {
+        return $"{ID} [{Meta} bytes]\n{HexDump()}";
+    }
 
     public string HexDump()
     {
         const ushort MAX_DUMP_LENGTH = 512;
 
-        var dump = HexDump(this.GetSpan(DATA_OFFSET, Math.Min(this.WritePosition - HEADER_SIZE, MAX_DUMP_LENGTH)));
-        if (this.WritePosition > MAX_DUMP_LENGTH)
+        var dump = HexDump(GetSpan(DATA_OFFSET, Math.Min(WritePosition - HEADER_SIZE, MAX_DUMP_LENGTH)));
+        if (WritePosition > MAX_DUMP_LENGTH)
             return $"{dump}...larger than {MAX_DUMP_LENGTH}...";
 
         return dump;
@@ -127,14 +128,11 @@ public class Message : MessageStream
     public static string HexDump(Span<byte> buffer)
     {
         const int bytesPerLine = 16;
-        StringBuilder output = new StringBuilder();
-        StringBuilder ascii_output = new StringBuilder();
-        int length = buffer.Length;
-        if (length % bytesPerLine != 0)
-        {
-            length += bytesPerLine - (length % bytesPerLine);
-        }
-        for (int x = 0; x <= length; ++x)
+        var output = new StringBuilder();
+        var ascii_output = new StringBuilder();
+        var length = buffer.Length;
+        if (length % bytesPerLine != 0) length += bytesPerLine - length % bytesPerLine;
+        for (var x = 0; x <= length; ++x)
         {
             if (x % bytesPerLine == 0)
             {
@@ -143,23 +141,18 @@ public class Message : MessageStream
                     output.Append($"  {ascii_output.ToString()}{Environment.NewLine}");
                     ascii_output.Clear();
                 }
-                if (x != length)
-                {
-                    output.Append($"{x:d10}   ");
-                }
+
+                if (x != length) output.Append($"{x:d10}   ");
             }
+
             if (x < buffer.Length)
             {
                 output.Append($"{buffer[x]:X2} ");
                 var ch = (char)buffer[x];
                 if (!char.IsControl(ch))
-                {
                     ascii_output.Append($"{ch}");
-                }
                 else
-                {
                     ascii_output.Append('.');
-                }
             }
             else
             {
@@ -167,73 +160,87 @@ public class Message : MessageStream
                 ascii_output.Append('.');
             }
         }
+
         return output.ToString();
     }
 
-    public Span<byte> GetSpan() => _memory.Span;
+    public Span<byte> GetSpan()
+    {
+        return _memory.Span;
+    }
 
-    public Span<byte> GetSpan(int start) => _memory.Span[start..];
+    public Span<byte> GetSpan(int start)
+    {
+        return _memory.Span[start..];
+    }
 
-    public Span<byte> GetSpan(int start, int length) => _memory.Span.Slice(start, length);
+    public Span<byte> GetSpan(int start, int length)
+    {
+        return _memory.Span.Slice(start, length);
+    }
 
-    public Memory<byte> GetWrittenMemory() => _memory.Slice(0, this.WritePosition);
+    public Memory<byte> GetWrittenMemory()
+    {
+        return _memory.Slice(0, WritePosition);
+    }
 
-    public bool TryCopyTo(Message destination) => this.GetSpan(0, this.WritePosition).TryCopyTo(destination.GetSpan(0, this.WritePosition));
+    public bool TryCopyTo(Message destination)
+    {
+        return GetSpan(0, WritePosition).TryCopyTo(destination.GetSpan(0, WritePosition));
+    }
 
     // ------------------------------------------------
 
-    public override bool TryRead<T>(out T value, [CallerMemberName] string? memberName = null, [CallerFilePath] string? filePath = null, [CallerLineNumber] int lineNumber = -1)
+    public override bool TryRead<T>(out T value, [CallerMemberName] string? memberName = null,
+        [CallerFilePath] string? filePath = null, [CallerLineNumber] int lineNumber = -1)
     {
         var size = (ushort)Unsafe.SizeOf<T>();
-        if (this.ReadPosition + size > this.WritePosition)
+        if (ReadPosition + size > WritePosition)
         {
             value = default;
             return false;
         }
 
-        if (!MemoryMarshal.TryRead(this.GetSpan(this.ReadPosition, size), out value))
+        if (!MemoryMarshal.TryRead(GetSpan(ReadPosition, size), out value))
         {
             value = default;
             return false;
         }
 
-        this.ReadPosition += size;
+        ReadPosition += size;
         return true;
     }
 
-    public override bool TryRead<T>(Span<T> values, [CallerMemberName] string? memberName = null, [CallerFilePath] string? filePath = null, [CallerLineNumber] int lineNumber = -1)
+    public override bool TryRead<T>(Span<T> values, [CallerMemberName] string? memberName = null,
+        [CallerFilePath] string? filePath = null, [CallerLineNumber] int lineNumber = -1)
     {
         var valueBytes = MemoryMarshal.AsBytes(values);
 
         var size = (ushort)valueBytes.Length;
-        if (this.ReadPosition + size > this.WritePosition)
-        {
-            return false;
-        }
+        if (ReadPosition + size > WritePosition) return false;
 
-        if (!this.GetSpan(this.ReadPosition, size).TryCopyTo(valueBytes))
-        {
-            return false;
-        }
+        if (!GetSpan(ReadPosition, size).TryCopyTo(valueBytes)) return false;
 
-        this.ReadPosition += size;
+        ReadPosition += size;
         return true;
     }
 
-    public override bool TryRead([NotNullWhen(true)] out string value, int length, Encoding encoding, [CallerMemberName] string? memberName = null, [CallerFilePath] string? filePath = null, [CallerLineNumber] int lineNumber = -1)
+    public override bool TryRead([NotNullWhen(true)] out string value, int length, Encoding encoding,
+        [CallerMemberName] string? memberName = null, [CallerFilePath] string? filePath = null,
+        [CallerLineNumber] int lineNumber = -1)
     {
-        if (this.ReadPosition + length > this.WritePosition)
+        if (ReadPosition + length > WritePosition)
         {
             value = null!;
             return false;
         }
 
-        var span = this.GetSpan(this.ReadPosition, length);
+        var span = GetSpan(ReadPosition, length);
         var terminator = span.IndexOf((byte)'\0');
         span = span.Slice(0, terminator == -1 ? length : terminator);
         value = encoding.GetString(span);
 
-        this.ReadPosition += (ushort)length;
+        ReadPosition += (ushort)length;
         return true;
     }
 
@@ -241,24 +248,26 @@ public class Message : MessageStream
 
     public override bool TryWrite<T>(ref T value)
     {
-        if (MemoryMarshal.TryWrite(this.GetSpan(this.WritePosition), ref value))
+        if (MemoryMarshal.TryWrite(GetSpan(WritePosition), ref value))
         {
-            this.WritePosition += (ushort)Unsafe.SizeOf<T>();
-            this.UpdateDataSize();
+            WritePosition += (ushort)Unsafe.SizeOf<T>();
+            UpdateDataSize();
             return true;
         }
+
         return false;
     }
 
     public override bool TryWrite<T>(ReadOnlySpan<T> values)
     {
         var valueBytes = MemoryMarshal.AsBytes(values);
-        if (valueBytes.TryCopyTo(this.GetSpan(this.WritePosition)))
+        if (valueBytes.TryCopyTo(GetSpan(WritePosition)))
         {
-            this.WritePosition += (ushort)valueBytes.Length;
-            this.UpdateDataSize();
+            WritePosition += (ushort)valueBytes.Length;
+            UpdateDataSize();
             return true;
         }
+
         return false;
     }
 
@@ -267,12 +276,12 @@ public class Message : MessageStream
         if (value is null || length == 0)
             return true; // there is nothing to write, we're good.
 
-        var result = encoding.GetBytes(value, this.GetSpan(this.WritePosition));
+        var result = encoding.GetBytes(value, GetSpan(WritePosition));
         if (result <= 0)
             return false;
 
-        this.WritePosition += (ushort)length;
-        this.UpdateDataSize();
+        WritePosition += (ushort)length;
+        UpdateDataSize();
         return true;
     }
 
@@ -280,21 +289,28 @@ public class Message : MessageStream
     {
         _referenceCounter.Reset();
         _memory.Span.Clear();
-        this.WritePosition = 6;
-        this.ReadPosition = 6;
+        WritePosition = 6;
+        ReadPosition = 6;
     }
 
-    public void Retain() => _referenceCounter.Retain();
-    public void Release() => this.Dispose();
-    
+    public void Retain()
+    {
+        _referenceCounter.Retain();
+    }
+
+    public void Release()
+    {
+        Dispose();
+    }
+
     public Message Clone(IMessageAllocator allocator)
     {
-        var clone = allocator.NewMsg(this.CallerMemberName, this.CallerFilePath);
-        clone.ReceiverID = this.ReceiverID;
-        clone.SenderID = this.SenderID;
-        clone.WritePosition = this.WritePosition;
-        clone.ReadPosition = this.ReadPosition;
-        this.TryCopyTo(clone);
+        var clone = allocator.NewMsg(CallerMemberName, CallerFilePath);
+        clone.ReceiverID = ReceiverID;
+        clone.SenderID = SenderID;
+        clone.WritePosition = WritePosition;
+        clone.ReadPosition = ReadPosition;
+        TryCopyTo(clone);
 
         return clone;
     }
@@ -314,6 +330,6 @@ public class Message : MessageStream
         if (Environment.HasShutdownStarted)
             return;
 
-        Log.Warning($"Message was leaked. Created in {this.CallerMemberName}\n({this.CallerFilePath}:{this.CallerFileLine})");
+        Log.Warning($"Message was leaked. Created in {CallerMemberName}\n({CallerFilePath}:{CallerFileLine})");
     }
 }

@@ -19,7 +19,10 @@ public class MessageHandlerManager<TMsg> : IMessageHandlerManager<TMsg>
         set => _handlerMap[id] = value;
     }
 
-    public void SetMsgHandler(MessageID id, MsgHandler<TMsg> handler) => _handlerMap[id] = handler;
+    public void SetMsgHandler(MessageID id, MsgHandler<TMsg> handler)
+    {
+        _handlerMap[id] = handler;
+    }
 
     public bool Handle(TMsg msg)
     {

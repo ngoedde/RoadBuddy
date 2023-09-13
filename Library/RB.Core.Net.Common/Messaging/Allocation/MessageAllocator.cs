@@ -9,14 +9,15 @@ public class MessageAllocator : IMessageAllocator
 
     public MessageAllocator(int id)
     {
-        this.Id = id;
+        Id = id;
         _messagePool = new MessagePool();
         _messagePool.Allocate(1024);
     }
 
     public int Id { get; set; }
 
-    public Message NewMsg([CallerMemberName] string? memberName = null, [CallerFilePath] string? filePath = null, [CallerLineNumber] int lineNumber = -1)
+    public Message NewMsg([CallerMemberName] string? memberName = null, [CallerFilePath] string? filePath = null,
+        [CallerLineNumber] int lineNumber = -1)
     {
         var msg = _messagePool.Rent();
         //var msg = MessagePool2.Shared.Get();
@@ -26,22 +27,24 @@ public class MessageAllocator : IMessageAllocator
         return msg;
     }
 
-    public Message NewMsg(MessageID id, int receiverId = -1, [CallerMemberName] string? memberName = null, [CallerFilePath] string? filePath = null, [CallerLineNumber] int lineNumber = -1)
+    public Message NewMsg(MessageID id, int receiverId = -1, [CallerMemberName] string? memberName = null,
+        [CallerFilePath] string? filePath = null, [CallerLineNumber] int lineNumber = -1)
     {
-        var msg = this.NewMsg(memberName, filePath, lineNumber);
+        var msg = NewMsg(memberName, filePath, lineNumber);
         msg.ID = id;
-        msg.SenderID = this.Id;
+        msg.SenderID = Id;
         msg.ReceiverID = receiverId;
 
         return msg;
     }
 
-    public Message NewLocalMsg(MessageID id, [CallerMemberName] string? memberName = null, [CallerFilePath] string? filePath = null, [CallerLineNumber] int lineNumber = -1)
+    public Message NewLocalMsg(MessageID id, [CallerMemberName] string? memberName = null,
+        [CallerFilePath] string? filePath = null, [CallerLineNumber] int lineNumber = -1)
     {
-        var msg = this.NewMsg(memberName, filePath, lineNumber);
+        var msg = NewMsg(memberName, filePath, lineNumber);
         msg.ID = id;
-        msg.ReceiverID = this.Id;
-        msg.SenderID = this.Id;
+        msg.ReceiverID = Id;
+        msg.SenderID = Id;
 
         return msg;
     }

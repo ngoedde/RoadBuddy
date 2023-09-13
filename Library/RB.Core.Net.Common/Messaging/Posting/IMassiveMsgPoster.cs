@@ -5,7 +5,7 @@ public interface IMassiveMsgPoster
     public bool SendMsg(int receiverID, MassiveMsg msg)
     {
         msg.ReceiverID = receiverID;
-        return this.PostMsg(msg);
+        return PostMsg(msg);
     }
 
     bool PostMsg(MassiveMsg msg);

@@ -8,8 +8,8 @@ public class NetEventArgs : SocketAsyncEventArgs
 
     internal virtual void Clear()
     {
-        this.AcceptSocket = null;
-        this.UserToken = null;
-        this.Session = null;
+        AcceptSocket = null;
+        UserToken = null;
+        Session = null;
     }
 }

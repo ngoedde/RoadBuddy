@@ -1,5 +1,4 @@
-﻿using RB.Core.Net.Common;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using RB.Core.Net.Common.Messaging;
 using Serilog;
 
@@ -16,7 +15,7 @@ internal class MessageEncryptor : IMessageEncryptor
 
         if ((session.Options & ProtocolOptions.Encryption) == 0)
         {
-            Log.Warning($"{nameof(this.Encrypt)}: Context does not support encryption. [{msg.ID}]");
+            Log.Warning($"{nameof(Encrypt)}: Context does not support encryption. [{msg.ID}]");
             msg.Encrypted = false;
             return EncodeResult.Success;
             //return EncodeResult.InvalidHeader;
@@ -26,7 +25,7 @@ internal class MessageEncryptor : IMessageEncryptor
         var outputLength = Blowfish.GetOutputLength(inputLength);
         if (outputLength + Message.HEADER_ENC_OFFSET > Message.BUFFER_SIZE)
         {
-            Log.Warning($"{nameof(this.Encrypt)}: Message exceeded buffer size. [{msg.ID}]");
+            Log.Warning($"{nameof(Encrypt)}: Message exceeded buffer size. [{msg.ID}]");
             msg.Encrypted = false;
             return EncodeResult.Success;
             //return EncodeResult.InvalidMsgSize;

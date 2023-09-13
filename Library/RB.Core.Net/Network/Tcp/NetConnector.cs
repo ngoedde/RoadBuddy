@@ -1,9 +1,6 @@
-﻿using RB.Core.Net.Common;
-
-using System;
-using System.Diagnostics;
-using System.Net;
+﻿using System.Net;
 using System.Net.Sockets;
+using RB.Core.Net.Common;
 using RB.Core.Net.Network.Memory;
 using RB.Core.Net.Network.Memory.EventArgs;
 using Serilog;
@@ -13,20 +10,23 @@ namespace RB.Core.Net.Network.Tcp;
 internal class NetConnector : NetIOHandler, INetConnector
 {
     private readonly NetConnectedEventHandler _connected;
+    private readonly INetEventArgsPool<NetEventArgs> _connectEventArgsPool;
 
     private readonly ISocketPool _socketPool;
-    private readonly INetEventArgsPool<NetEventArgs> _connectEventArgsPool;
 
     public NetConnector(ISocketPool socketPool, NetConnectedEventHandler connected)
     {
         _socketPool = socketPool;
         _connected = connected;
 
-        _connectEventArgsPool = new NetEventArgsPool<NetEventArgs>(this.ConnectCompleted);
+        _connectEventArgsPool = new NetEventArgsPool<NetEventArgs>(ConnectCompleted);
         _connectEventArgsPool.Allocate(1024);
     }
 
-    public void Connect(string hostOrIP, ushort port) => this.Connect(NetHelper.ToIPEndPoint(hostOrIP, port));
+    public void Connect(string hostOrIP, ushort port)
+    {
+        Connect(NetHelper.ToIPEndPoint(hostOrIP, port));
+    }
 
     public void Connect(EndPoint remoteEndPoint)
     {
@@ -44,8 +44,8 @@ internal class NetConnector : NetIOHandler, INetConnector
                 return;
 
             // The I/O operation completed synchronously, SocketAsyncEventArgs.Completed event will not be raised.
-            this.ReportSyncIO();
-            this.ConnectCompleted(socket, connectArgs);
+            ReportSyncIO();
+            ConnectCompleted(socket, connectArgs);
         }
         catch (Exception ex)
         {
@@ -58,8 +58,8 @@ internal class NetConnector : NetIOHandler, INetConnector
 
     private void ConnectCompleted(object? sender, SocketAsyncEventArgs e)
     {
-        this.ReportAsyncIO();
-        this.ConnectCompleted((NetEventArgs)e);
+        ReportAsyncIO();
+        ConnectCompleted((NetEventArgs)e);
     }
 
     private void ConnectCompleted(NetEventArgs e)
@@ -81,7 +81,7 @@ internal class NetConnector : NetIOHandler, INetConnector
             return;
         }
 
-        this.OnConnected(e.ConnectSocket);
+        OnConnected(e.ConnectSocket);
         _connectEventArgsPool.Return(e);
     }
 

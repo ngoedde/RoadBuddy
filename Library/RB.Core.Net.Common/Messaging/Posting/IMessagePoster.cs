@@ -7,6 +7,6 @@ public interface IMessagePoster
     public bool SendMsg(int receiverID, Message msg)
     {
         msg.ReceiverID = receiverID;
-        return this.PostMsg(msg);
+        return PostMsg(msg);
     }
 }

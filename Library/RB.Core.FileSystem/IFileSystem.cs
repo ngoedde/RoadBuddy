@@ -44,7 +44,7 @@ public interface IFileSystem
     public IEnumerable<IFile> GetFiles(string folderPath);
     public IFolder[] GetFolders(string folderPath);
     public string[] GetChildren(string folderPath);
-    
+
     public IFileReader OpenRead(string path);
 
     public IEnumerable<byte> ReadAllBytes(string path)

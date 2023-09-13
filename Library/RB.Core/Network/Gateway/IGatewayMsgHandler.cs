@@ -4,5 +4,4 @@ namespace RB.Core.Network.Gateway;
 
 public interface IGatewayMsgHandler : IMsgHandler
 {
-    
 }

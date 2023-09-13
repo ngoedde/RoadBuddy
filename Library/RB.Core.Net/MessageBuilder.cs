@@ -1,27 +1,26 @@
-﻿using RB.Core.Net.Common;
-using RB.Core.Net.Common.Messaging;
-using RB.Core.Net.Common.Messaging.Allocation;
-using RB.Core.Net.Common.Protocol;
-
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using RB.Core.Net.Common;
+using RB.Core.Net.Common.Messaging;
+using RB.Core.Net.Common.Messaging.Allocation;
+using RB.Core.Net.Common.Protocol;
 
 namespace RB.Core.Net;
 
 internal class MessageBuilder : IMessageBuilder
 {
     private readonly IMessageAllocator _allocator;
-    private readonly IMessageCryptoContext _context;
 
-    private readonly Queue<Message> _completed = new Queue<Message>();
+    private readonly Queue<Message> _completed = new();
+    private readonly IMessageCryptoContext _context;
     private readonly Memory<byte> _msgMetaBuffer = new byte[Unsafe.SizeOf<MessageMeta>()];
-    private int _msgMetaOffset;
 
     private Message? _msg;
-    private int _msgSize;
+    private int _msgMetaOffset;
     private int _msgOffset;
+    private int _msgSize;
 
     public MessageBuilder(IMessageAllocator allocator, IMessageCryptoContext context)
     {
@@ -48,7 +47,8 @@ internal class MessageBuilder : IMessageBuilder
 
                 // calculate raw message size
                 if (meta.Encrypted && (_context.Options & ProtocolOptions.Encryption) != 0)
-                    _msgSize = Blowfish.GetOutputLength(meta.DataSize + Message.HEADER_ENC_SIZE) + Message.HEADER_ENC_OFFSET;
+                    _msgSize = Blowfish.GetOutputLength(meta.DataSize + Message.HEADER_ENC_SIZE) +
+                               Message.HEADER_ENC_OFFSET;
                 else
                     _msgSize = meta.DataSize + Message.HEADER_SIZE;
 
@@ -74,8 +74,12 @@ internal class MessageBuilder : IMessageBuilder
                 _msg = null;
             }
         }
+
         return true;
     }
 
-    public bool TryGet([MaybeNullWhen(false)] out Message msg) => _completed.TryDequeue(out msg);
+    public bool TryGet([MaybeNullWhen(false)] out Message msg)
+    {
+        return _completed.TryDequeue(out msg);
+    }
 }

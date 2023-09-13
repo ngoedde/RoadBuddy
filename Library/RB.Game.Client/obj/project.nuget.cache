@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "bgZPi7tt6TiVsro7OZ242Xvd57u4njdiG5nfye0Vkm4bwSGABEjedJyLLaKKQi2NgrAQWMFJcdW1JjLUl7DXTQ==",
+  "dgSpecHash": "pwlvY3JSWE8d4PaAZj+jnaF+RkgN4xt/9CFGvJuvNNuLcVF3ki6+IDRsYOBQwaAtOOf52mZ0vQOG4SfhN9Ct8g==",
   "success": true,
   "projectFilePath": "/Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Library/RB.Game.Client/RB.Game.Client.csproj",
   "expectedPackageFiles": [
@@ -8,6 +8,7 @@
     "/Users/ngoedde/.nuget/packages/microsoft.extensions.configuration.abstractions/7.0.0/microsoft.extensions.configuration.abstractions.7.0.0.nupkg.sha512",
     "/Users/ngoedde/.nuget/packages/microsoft.extensions.configuration.binder/7.0.4/microsoft.extensions.configuration.binder.7.0.4.nupkg.sha512",
     "/Users/ngoedde/.nuget/packages/microsoft.extensions.dependencyinjection.abstractions/7.0.0/microsoft.extensions.dependencyinjection.abstractions.7.0.0.nupkg.sha512",
+    "/Users/ngoedde/.nuget/packages/microsoft.extensions.objectpool/7.0.4/microsoft.extensions.objectpool.7.0.4.nupkg.sha512",
     "/Users/ngoedde/.nuget/packages/microsoft.extensions.options/7.0.1/microsoft.extensions.options.7.0.1.nupkg.sha512",
     "/Users/ngoedde/.nuget/packages/microsoft.extensions.primitives/7.0.0/microsoft.extensions.primitives.7.0.0.nupkg.sha512",
     "/Users/ngoedde/.nuget/packages/serilog/3.0.1/serilog.3.0.1.nupkg.sha512"

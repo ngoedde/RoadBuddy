@@ -4,5 +4,5 @@ public enum EncodeResult : byte
 {
     Success,
     InvalidMsgSize,
-    InvalidHeader,
+    InvalidHeader
 }

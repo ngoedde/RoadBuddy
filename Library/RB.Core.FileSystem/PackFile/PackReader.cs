@@ -1,7 +1,6 @@
 using System.Diagnostics;
 using System.Text;
 using RB.Core.FileSystem.IO;
-using RB.Core.FileSystem.PackFile.Component;
 using RB.Core.FileSystem.PackFile.Cryptography;
 using RB.Core.FileSystem.PackFile.Struct;
 using Serilog;
@@ -41,7 +40,7 @@ internal class PackReader
         Log.Debug($"Reading pack file took {sw.ElapsedMilliseconds}ms");
 
         _resolver = new PackResolver(this, pathSeparator);
-        
+
         return new PackArchive(header, blowfish, _resolver, pathSeparator);
     }
 
@@ -71,11 +70,11 @@ internal class PackReader
 
         return block;
     }
-    
+
     public IEnumerable<PackBlock> ReadBlocksAt(long position)
     {
         var result = new List<PackBlock>(16);
-        
+
         var block = ReadBlockAt(position);
         result.Add(block);
 
@@ -92,11 +91,10 @@ internal class PackReader
 
         var buffer = reader.ReadBytes(128 * result.Length);
         var entryBuffer = _blowfish != null ? _blowfish.Decode(buffer) : buffer;
-        
+
         using var entryReader = new BsReader(new MemoryStream(entryBuffer));
         //Read entries
         for (var iEntry = 0; iEntry < 20; iEntry++)
-        {
             result[iEntry] = new PackEntry
             {
                 Type = (PackEntryType)entryReader.ReadByte(),
@@ -108,7 +106,6 @@ internal class PackReader
                 NextBlock = entryReader.ReadInt64(),
                 Payload = entryReader.ReadBytes(2) //Padding to reach 128 bytes length
             };
-        }
 
         return result;
     }

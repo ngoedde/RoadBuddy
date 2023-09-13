@@ -8,6 +8,13 @@ namespace RB.Core.Net;
 
 public class ProtocolContext : IProtocolContext
 {
+    public ProtocolContext()
+    {
+        Blowfish = new Blowfish();
+        Checksummer = new MessageChecksummer();
+        Sequencer = new MessageSequencer();
+    }
+
     public KeyExchangeState KeyState { get; set; }
     public ulong InitialKey { get; set; }
     public uint Generator { get; set; }
@@ -21,11 +28,4 @@ public class ProtocolContext : IProtocolContext
     public IMessageSequencer Sequencer { get; }
     public ProtocolOptions Options { get; set; }
     public Blowfish Blowfish { get; }
-
-    public ProtocolContext()
-    {
-        this.Blowfish = new Blowfish();
-        this.Checksummer = new MessageChecksummer();
-        this.Sequencer = new MessageSequencer();
-    }
 }

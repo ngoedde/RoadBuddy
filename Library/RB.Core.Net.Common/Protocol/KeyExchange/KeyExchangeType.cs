@@ -3,5 +3,5 @@
 public enum KeyExchangeType : byte
 {
     Server,
-    Client,
+    Client
 }

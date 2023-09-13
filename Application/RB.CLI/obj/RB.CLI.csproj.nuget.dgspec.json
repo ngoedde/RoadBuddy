@@ -27,6 +27,9 @@
           "net7.0": {
             "targetAlias": "net7.0",
             "projectReferences": {
+              "/Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Library/RB.Bot/RB.Bot.csproj": {
+                "projectPath": "/Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Library/RB.Bot/RB.Bot.csproj"
+              },
               "/Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Library/RB.Core.Net/RB.Core.Net.csproj": {
                 "projectPath": "/Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Library/RB.Core.Net/RB.Core.Net.csproj"
               },
@@ -124,7 +127,11 @@
         "frameworks": {
           "net7.0": {
             "targetAlias": "net7.0",
-            "projectReferences": {}
+            "projectReferences": {
+              "/Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Library/RB.Core/RB.Core.csproj": {
+                "projectPath": "/Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Library/RB.Core/RB.Core.csproj"
+              }
+            }
           }
         },
         "warningProperties": {
@@ -136,6 +143,16 @@
       "frameworks": {
         "net7.0": {
           "targetAlias": "net7.0",
+          "dependencies": {
+            "Microsoft.Extensions.Configuration.Abstractions": {
+              "target": "Package",
+              "version": "[7.0.0, )"
+            },
+            "Microsoft.Extensions.DependencyInjection.Abstractions": {
+              "target": "Package",
+              "version": "[7.0.0, )"
+            }
+          },
           "imports": [
             "net461",
             "net462",
@@ -367,9 +384,6 @@
           "net7.0": {
             "targetAlias": "net7.0",
             "projectReferences": {
-              "/Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Library/RB.Bot/RB.Bot.csproj": {
-                "projectPath": "/Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Library/RB.Bot/RB.Bot.csproj"
-              },
               "/Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Library/RB.Core.Net.Common/RB.Core.Net.Common.csproj": {
                 "projectPath": "/Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Library/RB.Core.Net.Common/RB.Core.Net.Common.csproj"
               },
@@ -449,6 +463,9 @@
             "projectReferences": {
               "/Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Library/RB.Core.FileSystem/RB.Core.FileSystem.csproj": {
                 "projectPath": "/Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Library/RB.Core.FileSystem/RB.Core.FileSystem.csproj"
+              },
+              "/Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Library/RB.Game/RB.Game.csproj": {
+                "projectPath": "/Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Library/RB.Game/RB.Game.csproj"
               }
             }
           }
@@ -526,7 +543,11 @@
         "frameworks": {
           "net7.0": {
             "targetAlias": "net7.0",
-            "projectReferences": {}
+            "projectReferences": {
+              "/Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Library/RB.Core.Net.Common/RB.Core.Net.Common.csproj": {
+                "projectPath": "/Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Library/RB.Core.Net.Common/RB.Core.Net.Common.csproj"
+              }
+            }
           }
         },
         "warningProperties": {

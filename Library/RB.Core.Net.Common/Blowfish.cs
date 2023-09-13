@@ -1,5 +1,4 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -7,6 +6,94 @@ namespace RB.Core.Net.Common;
 
 public sealed class Blowfish
 {
+    /// <summary>
+    ///     448 bit
+    /// </summary>
+    private const int KEY_SIZE_MAX = 56;
+
+    /// <summary>
+    ///     32 bit
+    /// </summary>
+    private const int KEY_SIZE_MIN = 4;
+
+    /// <summary>
+    ///     SBox rounds
+    /// </summary>
+    private const int N = 16;
+
+    public Blowfish()
+    {
+    }
+
+    public Blowfish(byte[] key) : this(key, 0, key.Length)
+    {
+    }
+
+    public Blowfish(byte[] key, int offset, int length)
+    {
+        Initialize(key, offset, length);
+    }
+
+    public Blowfish(ReadOnlySpan<byte> key)
+    {
+        Initialize(key);
+    }
+
+    #region Methods (internal)
+
+    private int Transform(TransformMode transformMode, in ReadOnlySpan<byte> input, in Span<byte> output)
+    {
+        var input32 = MemoryMarshal.Cast<byte, uint>(input);
+        var output32 = MemoryMarshal.Cast<byte, uint>(output);
+
+        var blockIndex = 0;
+        while (blockIndex < input32.Length)
+        {
+            var left = input32[blockIndex + 0];
+            var right = input32[blockIndex + 1];
+
+            if (transformMode == TransformMode.Encode)
+                Encipher(ref left, ref right);
+            else if (transformMode == TransformMode.Decode)
+                Decipher(ref left, ref right);
+
+            output32[blockIndex + 0] = left;
+            output32[blockIndex + 1] = right;
+
+            blockIndex += 2;
+        }
+
+        var finalBlockSize = input.Length & (sizeof(uint) | sizeof(ushort) | sizeof(byte));
+        if (finalBlockSize > 0)
+        {
+            Debug.Assert(transformMode == TransformMode.Encode, "Final block not expected on blowfish decode.");
+
+            var finalInput = input.Slice(blockIndex * sizeof(uint), finalBlockSize);
+            var finalOutput = output.Slice(blockIndex * sizeof(uint), sizeof(ulong));
+            finalInput.CopyTo(finalOutput);
+
+            var left = output32[blockIndex + 0];
+            var right = output32[blockIndex + 1];
+
+            Encipher(ref left, ref right);
+
+            output32[blockIndex + 0] = left;
+            output32[blockIndex + 1] = right;
+
+            blockIndex += 2;
+        }
+
+        return blockIndex * sizeof(uint);
+    }
+
+    #endregion Methods (internal)
+
+    private enum TransformMode
+    {
+        Encode,
+        Decode
+    }
+
     #region Static
 
     private static readonly uint[] _bf_P = new uint[N + 2]
@@ -15,7 +102,7 @@ public sealed class Blowfish
         0xA4093822, 0x299F31D0, 0x082EFA98, 0xEC4E6C89,
         0x452821E6, 0x38D01377, 0xBE5466CF, 0x34E90C6C,
         0xC0AC29B7, 0xC97C50DD, 0x3F84D5B5, 0xB5470917,
-        0x9216D5D9, 0x8979FB1B,
+        0x9216D5D9, 0x8979FB1B
     };
 
     private static readonly uint[,] _bf_S = new uint[4, 256]
@@ -52,8 +139,8 @@ public sealed class Blowfish
             0x2464369B, 0xF009B91E, 0x5563911D, 0x59DFA6AA, 0x78C14389, 0xD95A537F, 0x207D5BA2, 0x02E5B9C5,
             0x83260376, 0x6295CFA9, 0x11C81968, 0x4E734A41, 0xB3472DCA, 0x7B14A94A, 0x1B510052, 0x9A532915,
             0xD60F573F, 0xBC9BC6E4, 0x2B60A476, 0x81E67400, 0x08BA6FB5, 0x571BE91F, 0xF296EC6B, 0x2A0DD915,
-            0xB6636521, 0xE7B9F9B6, 0xFF34052E, 0xC5855664, 0x53B02D5D, 0xA99F8FA1, 0x08BA4799, 0x6E85076A,
- },
+            0xB6636521, 0xE7B9F9B6, 0xFF34052E, 0xC5855664, 0x53B02D5D, 0xA99F8FA1, 0x08BA4799, 0x6E85076A
+        },
         {
             0x4B7A70E9, 0xB5B32944, 0xDB75092E, 0xC4192623, 0xAD6EA6B0, 0x49A7DF7D, 0x9CEE60B8, 0x8FEDB266,
             0xECAA8C71, 0x699A17FF, 0x5664526C, 0xC2B19EE1, 0x193602A5, 0x75094C29, 0xA0591340, 0xE4183A3E,
@@ -86,7 +173,7 @@ public sealed class Blowfish
             0x3372F092, 0x8D937E41, 0xD65FECF1, 0x6C223BDB, 0x7CDE3759, 0xCBEE7460, 0x4085F2A7, 0xCE77326E,
             0xA6078084, 0x19F8509E, 0xE8EFD855, 0x61D99735, 0xA969A7AA, 0xC50C06C2, 0x5A04ABFC, 0x800BCADC,
             0x9E447A2E, 0xC3453484, 0xFDD56705, 0x0E1E9EC9, 0xDB73DBD3, 0x105588CD, 0x675FDA79, 0xE3674340,
-            0xC5C43465, 0x713E38D8, 0x3D28F89E, 0xF16DFF20, 0x153E21E7, 0x8FB03D4A, 0xE6E39F2B, 0xDB83ADF7,
+            0xC5C43465, 0x713E38D8, 0x3D28F89E, 0xF16DFF20, 0x153E21E7, 0x8FB03D4A, 0xE6E39F2B, 0xDB83ADF7
         },
         {
             0xE93D5A68, 0x948140F7, 0xF64C261C, 0x94692934, 0x411520F7, 0x7602D4F7, 0xBCF46B2E, 0xD4A20068,
@@ -120,7 +207,7 @@ public sealed class Blowfish
             0x11E69ED7, 0x2338EA63, 0x53C2DD94, 0xC2C21634, 0xBBCBEE56, 0x90BCB6DE, 0xEBFC7DA1, 0xCE591D76,
             0x6F05E409, 0x4B7C0188, 0x39720A3D, 0x7C927C24, 0x86E3725F, 0x724D9DB9, 0x1AC15BB4, 0xD39EB8FC,
             0xED545578, 0x08FCA5B5, 0xD83D7CD3, 0x4DAD0FC4, 0x1E50EF5E, 0xB161E6F8, 0xA28514D9, 0x6C51133C,
-            0x6FD5C7E7, 0x56E14EC4, 0x362ABFCE, 0xDDC6C837, 0xD79A3234, 0x92638212, 0x670EFA8E, 0x406000E0,
+            0x6FD5C7E7, 0x56E14EC4, 0x362ABFCE, 0xDDC6C837, 0xD79A3234, 0x92638212, 0x670EFA8E, 0x406000E0
         },
         {
             0x3A39CE37, 0xD3FAF5CF, 0xABC27737, 0x5AC52D1B, 0x5CB0679E, 0x4FA33742, 0xD3822740, 0x99BC9BBE,
@@ -154,34 +241,16 @@ public sealed class Blowfish
             0xC9AA53FD, 0x62A80F00, 0xBB25BFE2, 0x35BDD2F6, 0x71126905, 0xB2040222, 0xB6CBCF7C, 0xCD769C2B,
             0x53113EC0, 0x1640E3D3, 0x38ABBD60, 0x2547ADF0, 0xBA38209C, 0xF746CE76, 0x77AFA1C5, 0x20756060,
             0x85CBFE4E, 0x8AE88DD8, 0x7AAAF9B0, 0x4CF9AA7E, 0x1948C25C, 0x02FB8A8C, 0x01C36AE4, 0xD6EBE1F9,
-            0x90D4F869, 0xA65CDEA0, 0x3F09252D, 0xC208E69F, 0xB74E6132, 0xCE77E25B, 0x578FDFE3, 0x3AC372E6,
+            0x90D4F869, 0xA65CDEA0, 0x3F09252D, 0xC208E69F, 0xB74E6132, 0xCE77E25B, 0x578FDFE3, 0x3AC372E6
         }
     };
 
-    public static int GetOutputLength(int length) => (length + 7) & -8;
-
-    #endregion Static
-
-    private enum TransformMode
+    public static int GetOutputLength(int length)
     {
-        Encode,
-        Decode,
+        return (length + 7) & -8;
     }
 
-    /// <summary>
-    /// 448 bit
-    /// </summary>
-    private const int KEY_SIZE_MAX = 56;
-
-    /// <summary>
-    /// 32 bit
-    /// </summary>
-    private const int KEY_SIZE_MIN = 4;
-
-    /// <summary>
-    /// SBox rounds
-    /// </summary>
-    private const int N = 16;
+    #endregion Static
 
     #region Fields
 
@@ -190,34 +259,30 @@ public sealed class Blowfish
 
     #endregion Fields
 
-    public Blowfish()
-    {
-    }
-
-    public Blowfish(byte[] key) : this(key, 0, key.Length)
-    {
-    }
-
-    public Blowfish(byte[] key, int offset, int length) => this.Initialize(key, offset, length);
-
-    public Blowfish(ReadOnlySpan<byte> key) => this.Initialize(key);
-
     #region Methods (private)
 
     private void Decipher(ref uint xl, ref uint xr)
     {
-        uint Xl = xl;
-        uint Xr = xr;
+        var Xl = xl;
+        var Xr = xr;
 
         Xl ^= _pArray[N + 1];
-        this.ROUND(ref Xr, Xl, 16); this.ROUND(ref Xl, Xr, 15);
-        this.ROUND(ref Xr, Xl, 14); this.ROUND(ref Xl, Xr, 13);
-        this.ROUND(ref Xr, Xl, 12); this.ROUND(ref Xl, Xr, 11);
-        this.ROUND(ref Xr, Xl, 10); this.ROUND(ref Xl, Xr, 09);
-        this.ROUND(ref Xr, Xl, 08); this.ROUND(ref Xl, Xr, 07);
-        this.ROUND(ref Xr, Xl, 06); this.ROUND(ref Xl, Xr, 05);
-        this.ROUND(ref Xr, Xl, 04); this.ROUND(ref Xl, Xr, 03);
-        this.ROUND(ref Xr, Xl, 02); this.ROUND(ref Xl, Xr, 01);
+        ROUND(ref Xr, Xl, 16);
+        ROUND(ref Xl, Xr, 15);
+        ROUND(ref Xr, Xl, 14);
+        ROUND(ref Xl, Xr, 13);
+        ROUND(ref Xr, Xl, 12);
+        ROUND(ref Xl, Xr, 11);
+        ROUND(ref Xr, Xl, 10);
+        ROUND(ref Xl, Xr, 09);
+        ROUND(ref Xr, Xl, 08);
+        ROUND(ref Xl, Xr, 07);
+        ROUND(ref Xr, Xl, 06);
+        ROUND(ref Xl, Xr, 05);
+        ROUND(ref Xr, Xl, 04);
+        ROUND(ref Xl, Xr, 03);
+        ROUND(ref Xr, Xl, 02);
+        ROUND(ref Xl, Xr, 01);
         Xr ^= _pArray[0];
 
         xl = Xr;
@@ -226,18 +291,26 @@ public sealed class Blowfish
 
     private void Encipher(ref uint xl, ref uint xr)
     {
-        uint Xl = xl;
-        uint Xr = xr;
+        var Xl = xl;
+        var Xr = xr;
 
         Xl ^= _pArray[0];
-        this.ROUND(ref Xr, Xl, 01); this.ROUND(ref Xl, Xr, 02);
-        this.ROUND(ref Xr, Xl, 03); this.ROUND(ref Xl, Xr, 04);
-        this.ROUND(ref Xr, Xl, 05); this.ROUND(ref Xl, Xr, 06);
-        this.ROUND(ref Xr, Xl, 07); this.ROUND(ref Xl, Xr, 08);
-        this.ROUND(ref Xr, Xl, 09); this.ROUND(ref Xl, Xr, 10);
-        this.ROUND(ref Xr, Xl, 11); this.ROUND(ref Xl, Xr, 12);
-        this.ROUND(ref Xr, Xl, 13); this.ROUND(ref Xl, Xr, 14);
-        this.ROUND(ref Xr, Xl, 15); this.ROUND(ref Xl, Xr, 16);
+        ROUND(ref Xr, Xl, 01);
+        ROUND(ref Xl, Xr, 02);
+        ROUND(ref Xr, Xl, 03);
+        ROUND(ref Xl, Xr, 04);
+        ROUND(ref Xr, Xl, 05);
+        ROUND(ref Xl, Xr, 06);
+        ROUND(ref Xr, Xl, 07);
+        ROUND(ref Xl, Xr, 08);
+        ROUND(ref Xr, Xl, 09);
+        ROUND(ref Xl, Xr, 10);
+        ROUND(ref Xr, Xl, 11);
+        ROUND(ref Xl, Xr, 12);
+        ROUND(ref Xr, Xl, 13);
+        ROUND(ref Xl, Xr, 14);
+        ROUND(ref Xr, Xl, 15);
+        ROUND(ref Xl, Xr, 16);
         Xr ^= _pArray[N + 1];
 
         xr = Xl;
@@ -245,67 +318,31 @@ public sealed class Blowfish
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private uint F(uint x) => ((_sBoxes[0, (x >> 24) & 0xFF] + _sBoxes[1, (x >> 16) & 0xFF]) ^ _sBoxes[2, (x >> 8) & 0xFF]) + _sBoxes[3, (x >> 0) & 0xFF];
+    private uint F(uint x)
+    {
+        return ((_sBoxes[0, (x >> 24) & 0xFF] + _sBoxes[1, (x >> 16) & 0xFF]) ^ _sBoxes[2, (x >> 8) & 0xFF]) +
+               _sBoxes[3, (x >> 0) & 0xFF];
+    }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private void ROUND(ref uint a, uint b, int n) => a ^= this.F(b) ^ _pArray[n];
+    private void ROUND(ref uint a, uint b, int n)
+    {
+        a ^= F(b) ^ _pArray[n];
+    }
 
     #endregion Methods (private)
 
-    #region Methods (internal)
-
-    private int Transform(TransformMode transformMode, in ReadOnlySpan<byte> input, in Span<byte> output)
-    {
-        var input32 = MemoryMarshal.Cast<byte, uint>(input);
-        var output32 = MemoryMarshal.Cast<byte, uint>(output);
-
-        var blockIndex = 0;
-        while (blockIndex < input32.Length)
-        {
-            var left = input32[blockIndex + 0];
-            var right = input32[blockIndex + 1];
-
-            if (transformMode == TransformMode.Encode)
-                this.Encipher(ref left, ref right);
-            else if (transformMode == TransformMode.Decode)
-                this.Decipher(ref left, ref right);
-
-            output32[blockIndex + 0] = left;
-            output32[blockIndex + 1] = right;
-
-            blockIndex += 2;
-        }
-
-        int finalBlockSize = input.Length & (sizeof(uint) | sizeof(ushort) | sizeof(byte));
-        if (finalBlockSize > 0)
-        {
-            Debug.Assert(transformMode == TransformMode.Encode, "Final block not expected on blowfish decode.");
-
-            var finalInput = input.Slice(blockIndex * sizeof(uint), finalBlockSize);
-            var finalOutput = output.Slice(blockIndex * sizeof(uint), sizeof(ulong));
-            finalInput.CopyTo(finalOutput);
-
-            var left = output32[blockIndex + 0];
-            var right = output32[blockIndex + 1];
-
-            this.Encipher(ref left, ref right);
-
-            output32[blockIndex + 0] = left;
-            output32[blockIndex + 1] = right;
-
-            blockIndex += 2;
-        }
-
-        return blockIndex * sizeof(uint);
-    }
-
-    #endregion Methods (internal)
-
     #region Methods (public)
 
-    public void Initialize(byte[] key) => this.Initialize(key, 0, key.Length);
+    public void Initialize(byte[] key)
+    {
+        Initialize(key, 0, key.Length);
+    }
 
-    public void Initialize(byte[] key, int offset, int length) => this.Initialize(key.AsSpan(offset, length));
+    public void Initialize(byte[] key, int offset, int length)
+    {
+        Initialize(key.AsSpan(offset, length));
+    }
 
     public void Initialize(ReadOnlySpan<byte> key)
     {
@@ -321,10 +358,10 @@ public sealed class Blowfish
         Array.Copy(_bf_S, _sBoxes, _bf_S.Length);
 
         var keyIndex = 0;
-        for (int i = 0; i < N + 2; i++)
+        for (var i = 0; i < N + 2; i++)
         {
             uint data = 0;
-            for (int ii = 0; ii < 4; ii++)
+            for (var ii = 0; ii < 4; ii++)
             {
                 data = (data << 8) | key[keyIndex++];
 
@@ -338,28 +375,29 @@ public sealed class Blowfish
 
         uint left = 0;
         uint right = 0;
-        for (int i = 0; i < N + 2; i += 2)
+        for (var i = 0; i < N + 2; i += 2)
         {
-            this.Encipher(ref left, ref right);
+            Encipher(ref left, ref right);
             _pArray[i + 0] = left;
             _pArray[i + 1] = right;
         }
 
-        for (int i = 0; i < 4; i++)
+        for (var i = 0; i < 4; i++)
+        for (var ii = 0; ii < 256; ii += 2)
         {
-            for (int ii = 0; ii < 256; ii += 2)
-            {
-                this.Encipher(ref left, ref right);
-                _sBoxes[i, ii + 0] = left;
-                _sBoxes[i, ii + 1] = right;
-            }
+            Encipher(ref left, ref right);
+            _sBoxes[i, ii + 0] = left;
+            _sBoxes[i, ii + 1] = right;
         }
     }
 
     #region Encode
 
     [Obsolete("Legacy for SSA")]
-    public byte[]? Encode(byte[] input) => this.Encode(input, 0, input.Length);
+    public byte[]? Encode(byte[] input)
+    {
+        return Encode(input, 0, input.Length);
+    }
 
     [Obsolete("Legacy for SSA")]
     public byte[]? Encode(byte[] input, int index, int length)
@@ -374,15 +412,21 @@ public sealed class Blowfish
 
         var outputLength = GetOutputLength(length - index);
         var output = new byte[outputLength];
-        if (this.Encode(input.AsSpan(index, length), output.AsSpan(0, outputLength)) == outputLength)
+        if (Encode(input.AsSpan(index, length), output.AsSpan(0, outputLength)) == outputLength)
             return output;
 
         return null;
     }
 
-    public int Encode(ReadOnlyMemory<byte> input, Memory<byte> output) => this.Encode(input.Span, output.Span);
+    public int Encode(ReadOnlyMemory<byte> input, Memory<byte> output)
+    {
+        return Encode(input.Span, output.Span);
+    }
 
-    public int Encode(Span<byte> buffer) => this.Encode(buffer, buffer);
+    public int Encode(Span<byte> buffer)
+    {
+        return Encode(buffer, buffer);
+    }
 
     public int Encode(ReadOnlySpan<byte> input, Span<byte> output)
     {
@@ -390,7 +434,7 @@ public sealed class Blowfish
         if (output.Length < outputLength)
             throw new ArgumentOutOfRangeException(nameof(output), "output too small");
 
-        return this.Transform(TransformMode.Encode, input, output);
+        return Transform(TransformMode.Encode, input, output);
     }
 
     #endregion Encode
@@ -398,7 +442,10 @@ public sealed class Blowfish
     #region Decode
 
     [Obsolete("Legacy for SSA")]
-    public byte[]? Decode(byte[] input) => this.Decode(input, 0, input.Length);
+    public byte[]? Decode(byte[] input)
+    {
+        return Decode(input, 0, input.Length);
+    }
 
     [Obsolete("Legacy for SSA")]
     public byte[]? Decode(byte[] input, int index, int length)
@@ -408,26 +455,32 @@ public sealed class Blowfish
         if (length <= 0)
             throw new ArgumentException("Must be greater than 0", nameof(length));
 
-        if ((length % 8) != 0)
+        if (length % 8 != 0)
             throw new ArgumentException("Must be % 8", nameof(length));
 
         var output = new byte[length];
-        if (this.Decode(input.AsSpan(index, length), output.AsSpan(0, length)) == length)
+        if (Decode(input.AsSpan(index, length), output.AsSpan(0, length)) == length)
             return output;
 
         return null;
     }
 
-    public int Decode(ReadOnlyMemory<byte> input, Memory<byte> output) => this.Decode(input.Span, output.Span);
+    public int Decode(ReadOnlyMemory<byte> input, Memory<byte> output)
+    {
+        return Decode(input.Span, output.Span);
+    }
 
-    public int Decode(Span<byte> buffer) => this.Decode(buffer, buffer);
+    public int Decode(Span<byte> buffer)
+    {
+        return Decode(buffer, buffer);
+    }
 
     public int Decode(ReadOnlySpan<byte> input, Span<byte> output)
     {
-        if ((input.Length % 8) != 0)
+        if (input.Length % 8 != 0)
             throw new ArgumentException("input.Length must be % 8", nameof(input));
 
-        return this.Transform(TransformMode.Decode, input, output);
+        return Transform(TransformMode.Decode, input, output);
     }
 
     #endregion Decode

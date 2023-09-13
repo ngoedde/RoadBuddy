@@ -4,5 +4,5 @@ public enum SessionType
 {
     Invalid = -1,
     Accepted = 0,
-    Connected = 1,
+    Connected = 1
 }

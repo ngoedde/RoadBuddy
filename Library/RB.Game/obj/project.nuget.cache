@@ -1,9 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "WnmqRtWnKY7oEgocrhFFT9tofijbJXJayHoSIjSVdcT8R2/eW/4Z2AAF0XjOUwLTk7vHAntVXuDcHOHgl64AHA==",
+  "dgSpecHash": "6shiLxjfxOIO98PV/qcQVJdUcGhn3UuhRi1xsjS4YNF+5jcsfOSiCd4ZW7tjQQR01uFoahf/Dp0tSszcWxqd0A==",
   "success": true,
   "projectFilePath": "/Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Library/RB.Game/RB.Game.csproj",
   "expectedPackageFiles": [
+    "/Users/ngoedde/.nuget/packages/microsoft.extensions.objectpool/7.0.4/microsoft.extensions.objectpool.7.0.4.nupkg.sha512",
     "/Users/ngoedde/.nuget/packages/serilog/3.0.1/serilog.3.0.1.nupkg.sha512"
   ],
   "logs": []

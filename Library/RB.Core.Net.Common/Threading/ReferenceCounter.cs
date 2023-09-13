@@ -14,7 +14,10 @@ public class ReferenceCounter
         Interlocked.Exchange(ref _state, 0);
     }
 
-    public void Retain() => Interlocked.Increment(ref _state);
+    public void Retain()
+    {
+        Interlocked.Increment(ref _state);
+    }
 
 
     public bool Release()

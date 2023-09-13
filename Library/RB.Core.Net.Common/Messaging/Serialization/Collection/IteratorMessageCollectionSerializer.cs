@@ -1,6 +1,4 @@
-﻿
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 
 namespace RB.Core.Net.Common.Messaging.Serialization.Collection;
 
@@ -19,6 +17,7 @@ internal class IteratorMessageCollectionSerializer : IMessageCollectionSerializa
             if (!writer.TryWrite(LIST_NEXT)) return false;
             if (!writer.TrySerialize(item)) return false;
         }
+
         return writer.TryWrite(LIST_END);
     }
 
@@ -37,7 +36,8 @@ internal class IteratorMessageCollectionSerializer : IMessageCollectionSerializa
             if (iterator == ITERATOR_END)
                 break;
 
-            Debug.Assert(iterator == ITERATOR_NEXT, $"Unexpected ITERATOR_NEXT value. (Expected: {ITERATOR_NEXT}; Actual: {iterator}");
+            Debug.Assert(iterator == ITERATOR_NEXT,
+                $"Unexpected ITERATOR_NEXT value. (Expected: {ITERATOR_NEXT}; Actual: {iterator}");
 
             if (!reader.TryDeserialize(out T item)) return false;
             collection.Add(item);

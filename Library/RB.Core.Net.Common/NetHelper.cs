@@ -1,5 +1,4 @@
-﻿using System;
-using System.Net;
+﻿using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
 
@@ -9,25 +8,41 @@ public static class NetHelper
 {
     internal const int BufferSize = 4096;
 
-    public static Socket CreateTcpSocket() => new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+    public static Socket CreateTcpSocket()
+    {
+        return new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+    }
 
-    public static Socket CreateUdpSocket() => new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+    public static Socket CreateUdpSocket()
+    {
+        return new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+    }
 
     public static IPEndPoint ToIPEndPoint(string? hostOrIP, ushort port)
     {
         ArgumentNullException.ThrowIfNull(hostOrIP);
 
-        if (!IPAddress.TryParse(hostOrIP, out IPAddress? address))
-            address = Array.Find(Dns.GetHostEntry(hostOrIP).AddressList, p => p.AddressFamily == AddressFamily.InterNetwork);
+        if (!IPAddress.TryParse(hostOrIP, out var address))
+            address = Array.Find(Dns.GetHostEntry(hostOrIP).AddressList,
+                p => p.AddressFamily == AddressFamily.InterNetwork);
 
         return new IPEndPoint(address!, port);
     }
 
-    public static string? AddressFromEndPoint(EndPoint endPoint) => (endPoint as IPEndPoint)?.ToString();
+    public static string? AddressFromEndPoint(EndPoint endPoint)
+    {
+        return (endPoint as IPEndPoint)?.ToString();
+    }
 
-    public static IPAddress? IPAddressFromEndPoint(EndPoint endPoint) => (endPoint as IPEndPoint)?.Address;
+    public static IPAddress? IPAddressFromEndPoint(EndPoint endPoint)
+    {
+        return (endPoint as IPEndPoint)?.Address;
+    }
 
-    public static int PortFromEndPoint(EndPoint endPoint) => (endPoint as IPEndPoint)?.Port ?? -1;
+    public static int PortFromEndPoint(EndPoint endPoint)
+    {
+        return (endPoint as IPEndPoint)?.Port ?? -1;
+    }
 
     public static string IntToIP(uint ip)
     {
@@ -43,10 +58,10 @@ public static class NetHelper
     {
         Span<byte> span = stackalloc byte[4];
 
-        for (int i = 0; i < 4; i++)
+        for (var i = 0; i < 4; i++)
         {
             var index = ip.IndexOf('.');
-            if (!byte.TryParse(ip[0..(index > 0 ? index : ip.Length)], out span[i]))
+            if (!byte.TryParse(ip[..(index > 0 ? index : ip.Length)], out span[i]))
                 return -1;
 
             ip = ip[(index + 1)..];

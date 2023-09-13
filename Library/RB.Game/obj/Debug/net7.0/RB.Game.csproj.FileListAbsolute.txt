@@ -10,3 +10,6 @@
 /Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Library/RB.Game/obj/Debug/net7.0/refint/RB.Game.dll
 /Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Library/RB.Game/obj/Debug/net7.0/RB.Game.pdb
 /Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Library/RB.Game/obj/Debug/net7.0/ref/RB.Game.dll
+/Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Library/RB.Game/bin/Debug/net7.0/RB.Core.Net.Common.dll
+/Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Library/RB.Game/bin/Debug/net7.0/RB.Core.Net.Common.pdb
+/Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Library/RB.Game/obj/Debug/net7.0/RB.Game.csproj.CopyComplete

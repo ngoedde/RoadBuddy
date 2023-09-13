@@ -4,8 +4,9 @@ namespace RB.Core.Net.Network.Tcp;
 
 public abstract class NetIOHandler : INetIOHandler
 {
-    private int _asynchronousIOCompletionCount;
-    private int _synchronousIOCompletionCount;
+    public int SynchronousIOCompletionCount { get; }
+
+    public int AsynchronousIOCompletionCount { get; }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     protected void ReportAsyncIO()
@@ -18,7 +19,4 @@ public abstract class NetIOHandler : INetIOHandler
     {
         //Interlocked.Increment(ref _synchronousIOCompletionCount);
     }
-
-    public int SynchronousIOCompletionCount => _synchronousIOCompletionCount;
-    public int AsynchronousIOCompletionCount => _asynchronousIOCompletionCount;
 }

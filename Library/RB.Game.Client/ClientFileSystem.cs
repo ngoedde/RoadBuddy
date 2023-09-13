@@ -13,6 +13,6 @@ public class ClientFileSystem : IClientFileSystem
     }
 
     public IFileSystem Data { get; }
-    
+
     public IFileSystem Media { get; }
 }

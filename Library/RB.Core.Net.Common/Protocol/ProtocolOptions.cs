@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace RB.Core.Net.Common.Protocol;
+﻿namespace RB.Core.Net.Common.Protocol;
 
 [Flags]
 public enum ProtocolOptions : byte
@@ -10,16 +8,16 @@ public enum ProtocolOptions : byte
     Disabled = 1,
 
     /// <summary>
-    /// Blowfish
+    ///     Blowfish
     /// </summary>
     Encryption = 2,
 
     /// <summary>
-    /// Error detection code with Sequence and Cyclic redundancy check
+    ///     Error detection code with Sequence and Cyclic redundancy check
     /// </summary>
     ErrorDetection = 4,
 
     KeyExchange = 8,
 
-    KeyChallenge = 16,
+    KeyChallenge = 16
 }

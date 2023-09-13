@@ -1,6 +1,5 @@
-﻿using RB.Core.Net.Common.Memory;
-
-using System.Net.Sockets;
+﻿using System.Net.Sockets;
+using RB.Core.Net.Common.Memory;
 
 namespace RB.Core.Net.Network.Memory;
 

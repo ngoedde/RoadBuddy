@@ -7,12 +7,12 @@ public class ClientMessageDecoder : IMessageDecoder
 {
     private readonly IMessageDecryptor _decrypter;
 
-    public static IMessageDecoder Shared { get; } = new ClientMessageDecoder(MessageDecryptor.Shared);
-
     public ClientMessageDecoder(IMessageDecryptor decrypter)
     {
         _decrypter = decrypter;
     }
+
+    public static IMessageDecoder Shared { get; } = new ClientMessageDecoder(MessageDecryptor.Shared);
 
     public DecodeResult Decode(IMessageEncodingContext context, Message msg)
     {

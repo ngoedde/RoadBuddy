@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace RB.Core.Net.Common.Messaging.Serialization.Collection;
+﻿namespace RB.Core.Net.Common.Messaging.Serialization.Collection;
 
 internal class BytePrefixMessageCollectionSerializer : IMessageCollectionSerializable
 {
@@ -12,6 +10,7 @@ internal class BytePrefixMessageCollectionSerializer : IMessageCollectionSeriali
             if (!reader.TryDeserialize(out T item)) return false;
             collection.Add(item);
         }
+
         return true;
     }
 
@@ -19,7 +18,8 @@ internal class BytePrefixMessageCollectionSerializer : IMessageCollectionSeriali
     {
         if (!writer.TryWrite((byte)collection.Count)) return false;
         foreach (var item in collection)
-            if (!writer.TrySerialize(item)) return false;
+            if (!writer.TrySerialize(item))
+                return false;
         return true;
     }
 }

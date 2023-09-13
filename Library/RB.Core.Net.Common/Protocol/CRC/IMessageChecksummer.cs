@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace RB.Core.Net.Common.Protocol.CRC;
+﻿namespace RB.Core.Net.Common.Protocol.CRC;
 
 public interface IMessageChecksummer
 {

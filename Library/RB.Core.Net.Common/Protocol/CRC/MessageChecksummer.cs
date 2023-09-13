@@ -1,9 +1,25 @@
-﻿using System;
-
-namespace RB.Core.Net.Common.Protocol.CRC;
+﻿namespace RB.Core.Net.Common.Protocol.CRC;
 
 public sealed class MessageChecksummer : IMessageChecksummer
 {
+    private uint _seed;
+
+    public void Initialize(uint seed)
+    {
+        _seed = seed << 8;
+    }
+
+    public byte Compute(Span<byte> buffer, int length)
+    {
+        var checksum = uint.MaxValue;
+
+        for (var x = 0; x < length; x++)
+            checksum = (checksum >> 8) ^ _table[_seed + ((buffer[x] ^ checksum) & byte.MaxValue)];
+
+        return (byte)(((checksum >> 24) & byte.MaxValue) + ((checksum >> 8) & byte.MaxValue) +
+                      ((checksum >> 16) & byte.MaxValue) + (checksum & byte.MaxValue));
+    }
+
     #region Static
 
     private static readonly uint[] _table = GenerateTable();
@@ -43,22 +59,21 @@ public sealed class MessageChecksummer : IMessageChecksummer
             0xA00AE278, 0xD70DD2EE, 0x4E048354, 0x3903B3C2, 0xA7672661, 0xD06016F7, 0x4969474D, 0x3E6E77DB,
             0xAED16A4A, 0xD9D65ADC, 0x40DF0B66, 0x37D83BF0, 0xA9BCAE53, 0xDEBB9EC5, 0x47B2CF7F, 0x30B5FFE9,
             0xBDBDF91C, 0xCABACD8A, 0x53B39E30, 0x24BCA3A6, 0xBAD03B05, 0xCDD706A3, 0x54DE57E9, 0x23D967BF,
-            0xB366722E, 0xC4614AB8, 0x5D381B02, 0x2B6F2B94, 0xB4CBBE37, 0xC3CC8EA1, 0x5A0DDF1B, 0x2D02ED8D,
+            0xB366722E, 0xC4614AB8, 0x5D381B02, 0x2B6F2B94, 0xB4CBBE37, 0xC3CC8EA1, 0x5A0DDF1B, 0x2D02ED8D
         };
 
-        int finalIndex = 0;
+        var finalIndex = 0;
         var finalTable = new uint[256 * 256];
-        for (int i = 0; i < 256; i++)
+        for (var i = 0; i < 256; i++)
         {
-            uint edx = baseTable[i];
+            var edx = baseTable[i];
             for (uint ecx = 0; ecx < 256; ++ecx)
             {
-                uint eax = ecx >> 1;
+                var eax = ecx >> 1;
                 if ((ecx & 1) != 0)
                     eax ^= edx;
 
-                for (int bit = 0; bit < 7; ++bit)
-                {
+                for (var bit = 0; bit < 7; ++bit)
                     if ((eax & 1) != 0)
                     {
                         eax >>= 1;
@@ -68,29 +83,13 @@ public sealed class MessageChecksummer : IMessageChecksummer
                     {
                         eax >>= 1;
                     }
-                }
+
                 finalTable[finalIndex++] = eax;
             }
         }
+
         return finalTable;
     }
 
     #endregion Static
-
-    private uint _seed;
-
-    public void Initialize(uint seed)
-    {
-        _seed = seed << 8;
-    }
-
-    public byte Compute(Span<byte> buffer, int length)
-    {
-        uint checksum = uint.MaxValue;
-
-        for (int x = 0; x < length; x++)
-            checksum = checksum >> 8 ^ _table[_seed + ((buffer[x] ^ checksum) & byte.MaxValue)];
-
-        return (byte)((checksum >> 24 & byte.MaxValue) + (checksum >> 8 & byte.MaxValue) + (checksum >> 16 & byte.MaxValue) + (checksum & byte.MaxValue));
-    }
 }

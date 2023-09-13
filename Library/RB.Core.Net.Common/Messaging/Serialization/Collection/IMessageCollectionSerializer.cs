@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace RB.Core.Net.Common.Messaging.Serialization.Collection;
+﻿namespace RB.Core.Net.Common.Messaging.Serialization.Collection;
 
 public interface IMessageCollectionSerializer
 {

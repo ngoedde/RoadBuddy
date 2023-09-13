@@ -1,5 +1,4 @@
-﻿
-namespace RB.Core.Net.Common.Messaging.Handling;
+﻿namespace RB.Core.Net.Common.Messaging.Handling;
 
 public class MessageHandlerManager<TMsg> : IMessageHandlerManager<TMsg>
     where TMsg : MessageStream
@@ -17,7 +16,10 @@ public class MessageHandlerManager<TMsg> : IMessageHandlerManager<TMsg>
         set => _handlerMap[id] = value;
     }
 
-    public void SetMsgHandler(MessageID id, MsgHandler<TMsg> handler) => _handlerMap[id] = handler;
+    public void SetMsgHandler(MessageID id, MsgHandler<TMsg> handler)
+    {
+        _handlerMap[id] = handler;
+    }
 
     public bool Handle(TMsg msg)
     {
@@ -44,7 +46,10 @@ public class AsyncMessageHandlerManager<TMsg> : IAsyncMessageHandlerManager<TMsg
         set => _handlerMap[id] = value;
     }
 
-    public void SetMsgHandler(MessageID id, AsyncMsgHandler<TMsg> handler) => _handlerMap[id] = handler;
+    public void SetMsgHandler(MessageID id, AsyncMsgHandler<TMsg> handler)
+    {
+        _handlerMap[id] = handler;
+    }
 
     public ValueTask<bool> Handle(TMsg msg, CancellationToken cancellationToken = default)
     {

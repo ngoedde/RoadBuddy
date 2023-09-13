@@ -20,7 +20,7 @@ public class MessageDecryptor : IMessageDecryptor
         var outputLength = Blowfish.GetOutputLength(inputLength);
         if (outputLength + Message.HEADER_ENC_OFFSET > Message.BUFFER_SIZE)
         {
-            Log.Warning($"{nameof(this.Decrypt)}: Message exceeded buffer size. [{msg.ID}]");
+            Log.Warning($"{nameof(Decrypt)}: Message exceeded buffer size. [{msg.ID}]");
             return DecodeResult.InvalidMsgSize;
         }
 

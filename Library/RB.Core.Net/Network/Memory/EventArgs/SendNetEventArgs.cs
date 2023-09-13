@@ -9,7 +9,7 @@ public class SendNetEventArgs : NetEventArgs
     internal override void Clear()
     {
         base.Clear();
-        this.Message?.Dispose();
-        this.Message = null;
+        Message?.Dispose();
+        Message = null;
     }
 }

@@ -1,6 +1,5 @@
-﻿using RB.Core.Net.Common;
-
-using System.Net.Sockets;
+﻿using System.Net.Sockets;
+using RB.Core.Net.Common;
 using RB.Core.Net.Network.Memory;
 using RB.Core.Net.Network.Memory.EventArgs;
 using Serilog;
@@ -9,12 +8,11 @@ namespace RB.Core.Net.Network.Tcp;
 
 internal class NetAcceptor : NetIOHandler, INetAcceptor
 {
-    private readonly ISocketPool _socketPool;
-    private readonly Socket _listenerSocket;
+    private readonly NetAcceptedEventHandler _accepted;
 
     private readonly INetEventArgsPool<NetEventArgs> _acceptEventArgsPool;
-
-    private readonly NetAcceptedEventHandler _accepted;
+    private readonly Socket _listenerSocket;
+    private readonly ISocketPool _socketPool;
 
     public NetAcceptor(ISocketPool socketPool, NetAcceptedEventHandler accepted)
     {
@@ -22,7 +20,7 @@ internal class NetAcceptor : NetIOHandler, INetAcceptor
         _accepted = accepted;
 
         _listenerSocket = NetHelper.CreateTcpSocket();
-        _acceptEventArgsPool = new NetEventArgsPool<NetEventArgs>(this.AcceptCompleted);
+        _acceptEventArgsPool = new NetEventArgsPool<NetEventArgs>(AcceptCompleted);
         _acceptEventArgsPool.Allocate(1024); // TODO: From config
     }
 
@@ -33,7 +31,7 @@ internal class NetAcceptor : NetIOHandler, INetAcceptor
 
         Log.Information($"Listening on {hostOrIP}:{port}");
 
-        this.Accept();
+        Accept();
     }
 
     private void Accept()
@@ -49,12 +47,12 @@ internal class NetAcceptor : NetIOHandler, INetAcceptor
                 return;
 
             // The I/O operation completed synchronously, SocketAsyncEventArgs.Completed event will not be raised.
-            this.ReportSyncIO();
-            this.AcceptCompleted(this, args);
+            ReportSyncIO();
+            AcceptCompleted(this, args);
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"{nameof(NetAcceptor)}::{nameof(this.Accept)}: Failed to {nameof(Socket.AcceptAsync)}");
+            Console.WriteLine($"{nameof(NetAcceptor)}::{nameof(Accept)}: Failed to {nameof(Socket.AcceptAsync)}");
 
             _acceptEventArgsPool.Return(args);
             _socketPool.Return(socket);
@@ -63,8 +61,8 @@ internal class NetAcceptor : NetIOHandler, INetAcceptor
 
     private void AcceptCompleted(object? sender, SocketAsyncEventArgs e)
     {
-        this.ReportAsyncIO();
-        this.AcceptCompleted(sender, (NetEventArgs)e);
+        ReportAsyncIO();
+        AcceptCompleted(sender, (NetEventArgs)e);
     }
 
     private void AcceptCompleted(object? sender, NetEventArgs e)
@@ -90,14 +88,17 @@ internal class NetAcceptor : NetIOHandler, INetAcceptor
 
         try
         {
-            this.OnAccepted(e.AcceptSocket);
+            OnAccepted(e.AcceptSocket);
         }
         finally
         {
             _acceptEventArgsPool.Return(e);
-            this.Accept();
+            Accept();
         }
     }
 
-    protected virtual void OnAccepted(Socket socket) => _accepted?.Invoke(socket);
+    protected virtual void OnAccepted(Socket socket)
+    {
+        _accepted?.Invoke(socket);
+    }
 }

@@ -14,3 +14,7 @@
 /Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Library/RB.Game.Client/obj/Debug/net7.0/refint/RB.Game.Client.dll
 /Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Library/RB.Game.Client/obj/Debug/net7.0/RB.Game.Client.pdb
 /Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Library/RB.Game.Client/obj/Debug/net7.0/ref/RB.Game.Client.dll
+/Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Library/RB.Game.Client/bin/Debug/net7.0/RB.Game.dll
+/Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Library/RB.Game.Client/bin/Debug/net7.0/RB.Game.pdb
+/Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Library/RB.Game.Client/bin/Debug/net7.0/RB.Core.Net.Common.dll
+/Users/ngoedde/Projects/playground/road-buddy/RoadBuddy/Library/RB.Game.Client/bin/Debug/net7.0/RB.Core.Net.Common.pdb

@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace RB.Core.Net.Common.Messaging;
+﻿namespace RB.Core.Net.Common.Messaging;
 
 public struct MessageID : IEquatable<MessageID>
 {
@@ -24,8 +22,8 @@ public struct MessageID : IEquatable<MessageID>
 
     #endregion Reasons to use C++
 
-    public static readonly MessageID Empty = new MessageID(ushort.MinValue);
-    public static readonly MessageID MaxValue = new MessageID(ushort.MaxValue);
+    public static readonly MessageID Empty = new(ushort.MinValue);
+    public static readonly MessageID MaxValue = new(ushort.MaxValue);
 
     private ushort _value;
 
@@ -51,39 +49,72 @@ public struct MessageID : IEquatable<MessageID>
 
     #endregion Properties
 
-    public MessageID(ushort value) => _value = value;
+    public MessageID(ushort value)
+    {
+        _value = value;
+    }
 
     private MessageID(MessageDirection direction, MessageType type, ushort operation)
     {
         _value = default;
-        this.Direction = direction;
-        this.Type = type;
-        this.Operation = operation;
+        Direction = direction;
+        Type = type;
+        Operation = operation;
     }
 
-    public static MessageID Create(ushort value) => new MessageID(value);
+    public static MessageID Create(ushort value)
+    {
+        return new MessageID(value);
+    }
 
-    public static MessageID Create(MessageDirection dir, MessageType type, ushort operation) => new MessageID(dir, type, operation);
+    public static MessageID Create(MessageDirection dir, MessageType type, ushort operation)
+    {
+        return new MessageID(dir, type, operation);
+    }
 
-    public override string ToString() => $"0x{_value:X4} [{this.Direction}; {this.Type}; 0x{this.Operation:X3}]";
+    public override string ToString()
+    {
+        return $"0x{_value:X4} [{Direction}; {Type}; 0x{Operation:X3}]";
+    }
 
     //public static implicit operator ushort(MessageID id) => id._value;
 
-    public static explicit operator MessageID(ushort id) => new MessageID(id);
+    public static explicit operator MessageID(ushort id)
+    {
+        return new MessageID(id);
+    }
 
-    public static implicit operator ushort(MessageID id) => id._value;
+    public static implicit operator ushort(MessageID id)
+    {
+        return id._value;
+    }
 
     #region IEquatable
 
-    public static bool operator ==(MessageID left, MessageID right) => left.Equals(right);
+    public static bool operator ==(MessageID left, MessageID right)
+    {
+        return left.Equals(right);
+    }
 
-    public static bool operator !=(MessageID left, MessageID right) => !(left == right);
+    public static bool operator !=(MessageID left, MessageID right)
+    {
+        return !(left == right);
+    }
 
-    public override bool Equals(object? obj) => obj is MessageID id && this.Equals(id);
+    public override bool Equals(object? obj)
+    {
+        return obj is MessageID id && Equals(id);
+    }
 
-    public bool Equals(MessageID other) => _value == other._value;
+    public bool Equals(MessageID other)
+    {
+        return _value == other._value;
+    }
 
-    public override int GetHashCode() => HashCode.Combine(_value);
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(_value);
+    }
 
     #endregion IEquatable
 }

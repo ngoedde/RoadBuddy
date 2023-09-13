@@ -4,7 +4,10 @@ namespace RB.Game.Client.Service;
 
 public interface IDivisionInfoService
 {
-    public DivisionInfo GetDivisionInfo() => Load();
+    public DivisionInfo GetDivisionInfo()
+    {
+        return Load();
+    }
 
     DivisionInfo Load();
 }

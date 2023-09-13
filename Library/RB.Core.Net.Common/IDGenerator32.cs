@@ -1,6 +1,4 @@
-﻿using System.Threading;
-
-namespace RB.Core.Net.Common;
+﻿namespace RB.Core.Net.Common;
 
 public sealed class IDGenerator32
 {
@@ -16,7 +14,13 @@ public sealed class IDGenerator32
         _value = _initialValue = initialValue;
     }
 
-    public int Next() => Interlocked.Increment(ref _value);
+    public int Next()
+    {
+        return Interlocked.Increment(ref _value);
+    }
 
-    public void Reset() => Interlocked.Exchange(ref _value, _initialValue);
+    public void Reset()
+    {
+        Interlocked.Exchange(ref _value, _initialValue);
+    }
 }

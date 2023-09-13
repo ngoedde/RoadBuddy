@@ -1,6 +1,6 @@
-﻿using RB.Core.Net.Common.Extensions;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Threading.Channels;
+using RB.Core.Net.Common.Extensions;
 using RB.Core.Net.Common.Messaging.Handling;
 using Serilog;
 
@@ -8,12 +8,13 @@ namespace RB.Core.Net.Common.Messaging.Posting;
 
 public class AsyncMessagePoster : IAsyncMessagePoster
 {
+    private readonly AsyncMsgHandler<Message> _handleMsg;
     private readonly int _id;
     private readonly ChannelWriter<Message> _localWriter;
-    private readonly AsyncMsgHandler<Message> _handleMsg;
     private readonly AsyncMsgHandler<Message> _sendMsg;
 
-    public AsyncMessagePoster(int id, ChannelWriter<Message> localWriter, AsyncMsgHandler<Message> handleMsg, AsyncMsgHandler<Message> sendMsg)
+    public AsyncMessagePoster(int id, ChannelWriter<Message> localWriter, AsyncMsgHandler<Message> handleMsg,
+        AsyncMsgHandler<Message> sendMsg)
     {
         _id = id;
         _localWriter = localWriter;
@@ -25,20 +26,20 @@ public class AsyncMessagePoster : IAsyncMessagePoster
     {
         if (msg.ID == MessageID.Empty)
         {
-            Log.Warning($"{nameof(this.PostMsgAsync)}: Invalid ID");
+            Log.Warning($"{nameof(PostMsgAsync)}: Invalid ID");
             return ValueTask.FromResult(false);
         }
 
         const int MSG_TARGET_INVALID = -1;
         if (msg.ReceiverID == MSG_TARGET_INVALID)
         {
-            Log.Warning($"{nameof(this.PostMsgAsync)}: Invalid ReceiverID");
+            Log.Warning($"{nameof(PostMsgAsync)}: Invalid ReceiverID");
             return ValueTask.FromResult(false);
         }
 
         if (msg.SenderID == MSG_TARGET_INVALID)
         {
-            Log.Warning($"{nameof(this.PostMsgAsync)}: Invalid SenderID");
+            Log.Warning($"{nameof(PostMsgAsync)}: Invalid SenderID");
             return ValueTask.FromResult(false);
         }
 
@@ -51,7 +52,7 @@ public class AsyncMessagePoster : IAsyncMessagePoster
 
         if (msg.ReceiverID == _id && msg.SenderID != _id)
             return _handleMsg(msg, cancellationToken);
-        else if (msg.ReceiverID != _id && msg.SenderID == _id)
+        if (msg.ReceiverID != _id && msg.SenderID == _id)
             return _sendMsg(msg, cancellationToken);
 
         return ValueTask.FromException<bool>(new UnreachableException());

@@ -12,14 +12,6 @@ public interface IMessagePool
 
 public class MessagePool : CustomObjectPool<Message>, IMessagePool
 {
-    public override Message Create()
-    {
-        var pinnedArray = GC.AllocateArray<byte>(Message.BUFFER_SIZE, pinned: true);
-        var pinnedMemory = MemoryMarshal.CreateFromPinnedArray(pinnedArray, 0, pinnedArray.Length);
-        return new Message(this, pinnedMemory);
-        //return new Message(pinnedMemory);
-    }
-
     public override Message Rent()
     {
         var result = base.Rent();
@@ -29,6 +21,7 @@ public class MessagePool : CustomObjectPool<Message>, IMessagePool
                 throw new Exception("Trying to rent already rented.");
             result.IsRented = true;
         }
+
         return result;
     }
 
@@ -43,6 +36,14 @@ public class MessagePool : CustomObjectPool<Message>, IMessagePool
 
         item.Reset();
         base.Return(item);
+    }
+
+    public override Message Create()
+    {
+        var pinnedArray = GC.AllocateArray<byte>(Message.BUFFER_SIZE, true);
+        var pinnedMemory = MemoryMarshal.CreateFromPinnedArray(pinnedArray, 0, pinnedArray.Length);
+        return new Message(this, pinnedMemory);
+        //return new Message(pinnedMemory);
     }
 }
 

@@ -6,30 +6,30 @@ public class PackFolder : IFolder
 {
     public readonly PackEntry Entry;
 
-    /// <inheritdoc />
-    public IFileSystem FileSystem { get; }
-    
-    /// <inheritdoc />
-    public string Name => Entry.Name;
-    
-    /// <inheritdoc />
-    public IFolder Parent => FileSystem.GetFolder(PathUtil.GetFolderName(Path));
-
-    /// <inheritdoc />
-    public string Path { get; } 
-
-    /// <inheritdoc />
-    public DateTime CreationTime => Entry.CreationTime;
-    
-    /// <inheritdoc />
-    public DateTime ModifyTime => Entry.ModifyTime;
-    
     public PackFolder(string path, PackEntry entry, IFileSystem fileSystem)
     {
         Entry = entry;
         Path = path;
         FileSystem = fileSystem;
     }
+
+    /// <inheritdoc />
+    public IFileSystem FileSystem { get; }
+
+    /// <inheritdoc />
+    public string Name => Entry.Name;
+
+    /// <inheritdoc />
+    public IFolder Parent => FileSystem.GetFolder(PathUtil.GetFolderName(Path));
+
+    /// <inheritdoc />
+    public string Path { get; }
+
+    /// <inheritdoc />
+    public DateTime CreationTime => Entry.CreationTime;
+
+    /// <inheritdoc />
+    public DateTime ModifyTime => Entry.ModifyTime;
 
     /// <inheritdoc />
     public IFolder[] GetFolders()
