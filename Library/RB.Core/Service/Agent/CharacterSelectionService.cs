@@ -1,4 +1,5 @@
 using RB.Core.Net.Common.Messaging;
+using RB.Core.Network;
 using RB.Core.Network.Agent;
 using RB.Game.Objects.CharacterSelection;
 using Serilog;
@@ -16,10 +17,10 @@ public sealed class CharacterSelectionService
     public delegate void JoinedEventHandler();
     public event JoinedEventHandler? Joined;
     
-    private readonly IAgentClient _agentClient;
+    private readonly ServerEngine _agentClient;
     private CharacterList _characterList = new();
 
-    public CharacterSelectionService(IAgentClient agentClient)
+    public CharacterSelectionService(ServerEngine agentClient)
     {
         _agentClient = agentClient;
         

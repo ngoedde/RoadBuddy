@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using RB.Bot.Module.AutoLogin;
 using RB.Core;
+using RB.Core.Network;
 using RB.Game.Client.Service;
 using Serilog;
 
@@ -9,7 +10,7 @@ namespace RB.Bot.Module;
 public class BotKernel
 {
     private readonly IGameDataService _clientDataService;
-
+    
     public BotKernel(
         Kernel rbKernel,
         AutoLoginModule autoLoginModule,
@@ -29,5 +30,6 @@ public class BotKernel
 
     public void Tick()
     {
+      
     }
 }

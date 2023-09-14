@@ -17,11 +17,11 @@ public sealed class PatchInfoService
 
     private readonly IDivisionInfoService _divisionInfoService;
 
-    private readonly IGatewayClient _gatewayClient;
+    private readonly ServerEngine _gatewayClient;
     private readonly IVersionInfoService _versionInfoService;
 
     public PatchInfoService(
-        IGatewayClient gatewayClient,
+        ServerEngine gatewayClient,
         IOptions<AppConfig> config,
         IVersionInfoService versionInfoService,
         IDivisionInfoService divisionInfoService
@@ -34,6 +34,13 @@ public sealed class PatchInfoService
         _divisionInfoService = divisionInfoService;
 
         _gatewayClient.SetMsgHandler(GatewayMsgId.PatchInfoAck, OnPatchInfoAck);
+        _gatewayClient.ContextCreated += GatewayClientOnContextCreated;
+    }
+
+    private void GatewayClientOnContextCreated(ServerContext oldContext, ServerContext newContext)
+    {
+        if (newContext == ServerContext.Gateway)
+            RequestPatchInfo();
     }
 
     public PatchInfo PatchInfo { get; set; }

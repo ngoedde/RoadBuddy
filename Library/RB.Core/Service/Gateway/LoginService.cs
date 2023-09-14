@@ -1,4 +1,5 @@
 using RB.Core.Net.Common.Messaging;
+using RB.Core.Network;
 using RB.Core.Network.Gateway;
 using RB.Game.Client.Service;
 using Serilog;
@@ -12,10 +13,10 @@ public sealed class LoginService
     public delegate void OnLoginSuccessEventHandler(string agentIp, ushort agentPort, uint token);
 
     private readonly IDivisionInfoService _divisionInfoService;
-    private readonly IGatewayClient _gatewayClient;
+    private readonly ServerEngine _gatewayClient;
 
     public LoginService(
-        IGatewayClient gatewayClient,
+        ServerEngine gatewayClient,
         IDivisionInfoService divisionInfoService
     )
     {

@@ -112,8 +112,12 @@ public class AutoLoginModule
             return;
         }
 
-        _contextSwitcher.SetAgentContext(_config.AutoLogin.Username, _config.AutoLogin.Password,
-        _divisionInfo.GetDivisionInfo().ContentId);
+        _contextSwitcher.SetAgentContext(
+            _config.AutoLogin.Username, 
+            _config.AutoLogin.Password,
+            _divisionInfo.GetDivisionInfo().ContentId
+        );
+        
         _loginService.RequestLogin(_config.AutoLogin.Username, _config.AutoLogin.Password, shardId);
     }
 }

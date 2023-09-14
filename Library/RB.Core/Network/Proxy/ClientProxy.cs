@@ -1,18 +1,35 @@
-using RB.Core.Network.Agent;
-using RB.Core.Network.Gateway;
+using RB.Core.Net;
+using RB.Core.Net.Common.Messaging;
 
 namespace RB.Core.Network.Proxy;
 
-public class ClientProxy
+public class ClientProxy : NetServer
 {
-    public ClientProxy(
-        IGatewayClient gatewayClient,
-        IAgentClient agentClient
-    )
+    private int ClientId = -1;
+    
+    private readonly ServerEngine _server;
+
+    public ClientProxy(ServerEngine server)
     {
+        _server = server;
+        _server.ServerMessage += OnServerMessage;
+        
     }
 
-    public void Start(string ip, ushort port)
+    private void OnServerMessage(Message msg)
     {
+        //TODO: reroute packet
+        msg.ReceiverID = Id;
+        
+        PostMsg(msg);
+    }
+    
+    protected override bool OnMessage(Message msg)
+    {
+        // return base.OnMessage(msg);
+
+        msg.ReceiverID = _server.Id;
+        
+        return _server.PostMsg(msg);
     }
 }

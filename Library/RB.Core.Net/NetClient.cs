@@ -200,8 +200,6 @@ public abstract class NetClient : NetEngine, INetClient
 
     protected virtual void SendIdentity(int receiverId)
     {
-        ServerId = receiverId;
-
         using var setupCord = NewMsg(NetMsgId.SetupCordNoDir, receiverId);
 
         if (!setupCord.TryWrite(Identity)) return;

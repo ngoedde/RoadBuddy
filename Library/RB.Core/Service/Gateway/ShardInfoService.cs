@@ -1,4 +1,5 @@
 using RB.Core.Net.Common.Messaging;
+using RB.Core.Network;
 using RB.Core.Network.Gateway;
 using RB.Game.Objects.ShardInfo;
 using Serilog;
@@ -9,9 +10,9 @@ public sealed class ShardInfoService
 {
     public delegate void OnUpdateShardInfoEventHandler(ShardInfo info);
 
-    private readonly IGatewayClient _gatewayClient;
+    private readonly ServerEngine _gatewayClient;
 
-    public ShardInfoService(IGatewayClient gatewayClient)
+    public ShardInfoService(ServerEngine gatewayClient)
     {
         _gatewayClient = gatewayClient;
         _gatewayClient.SetMsgHandler(GatewayMsgId.ShardInfoAck, OnShardInfoAck);

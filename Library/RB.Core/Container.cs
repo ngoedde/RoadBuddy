@@ -1,8 +1,8 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using RB.Core.Network;
 using RB.Core.Network.Agent;
 using RB.Core.Network.Gateway;
-using RB.Core.Network.Gateway.Handler;
 using RB.Core.Service;
 using RB.Core.Service.Agent;
 using RB.Core.Service.Gateway;
@@ -22,17 +22,15 @@ public static class Container
 
         //NetEngine
         //  GatewayServer
-        serviceCollection.AddSingleton<IGatewayClient, GatewayClient>();
+        serviceCollection.AddSingleton<ServerEngine>();
         serviceCollection.AddSingleton<PatchInfoService>();
         serviceCollection.AddSingleton<GatewayHandlerGroup>();
-        serviceCollection.AddSingleton<IGatewayMsgHandler, IdentificationHandler>();
         serviceCollection.AddSingleton<ShardInfoService>();
         serviceCollection.AddSingleton<LoginService>();
         serviceCollection.AddSingleton<CharacterSelectionService>();
 
         //NetEngine
         //  AgentServer
-        serviceCollection.AddSingleton<IAgentClient, AgentClient>();
         serviceCollection.AddSingleton<AgentHandlerGroup>();
         serviceCollection.AddSingleton<Service.Agent.LoginService>();
         serviceCollection.AddSingleton<ContextSwitcher>();

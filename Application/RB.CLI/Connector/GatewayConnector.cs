@@ -1,4 +1,5 @@
-using RB.Core.Network.Gateway;
+using RB.Core.Net.Common;
+using RB.Core.Network;
 using RB.Core.Service;
 using RB.Game.Client.Service;
 using Serilog;
@@ -9,17 +10,14 @@ public class GatewayConnector
 {
     private readonly ContextSwitcher _contextSwitcher;
     private readonly IDivisionInfoService _divisionInfoService;
-    private readonly IGatewayClient _gatewayClient;
     private readonly IGatewayPortInfoService _gatewayPortInfoService;
 
     public GatewayConnector(
-        IGatewayClient gatewayClient,
         IDivisionInfoService divisionInfoService,
         IGatewayPortInfoService gatewayPortInfoService,
         ContextSwitcher contextSwitcher
     )
     {
-        _gatewayClient = gatewayClient;
         _divisionInfoService = divisionInfoService;
         _gatewayPortInfoService = gatewayPortInfoService;
         _contextSwitcher = contextSwitcher;
@@ -48,10 +46,5 @@ public class GatewayConnector
         Log.Information("Connecting to gateway {host}:{port} ...", gatewayHost, gatewayPort);
 
         _contextSwitcher.SwitchContextToGateway(gatewayHost, gatewayPort);
-    }
-
-    public void Update()
-    {
-        _gatewayClient.Update();
     }
 }

@@ -47,7 +47,7 @@ static void ConfigureServices(IServiceCollection services, IConfiguration config
 static void ConfigureLogger()
 {
     Log.Logger = new LoggerConfiguration()
-        .MinimumLevel.Information()
+        .MinimumLevel.Debug()
         .WriteTo.Console()
         .WriteTo.File(Environment.CurrentDirectory + "log.txt")
         .CreateLogger();

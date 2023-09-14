@@ -1,25 +1,26 @@
 using RB.Bot.Module;
 using RB.CLI.Connector;
 using RB.Core;
+using RB.Core.Network;
 using RB.Core.Network.Agent;
 
 namespace RB.CLI;
 
 public sealed class App : RoadBuddyApp, IRoadBuddyApp
 {
-    private readonly IAgentClient _agentClient;
     private readonly GatewayConnector _gatewayConnector;
     private readonly BotKernel _kernel;
+    private readonly ServerEngine _networkEngine;
 
     public App(
         GatewayConnector gatewayConnector,
-        IAgentClient agentClient,
-        BotKernel kernel
+        BotKernel kernel,
+        ServerEngine networkEngine
     )
     {
         _gatewayConnector = gatewayConnector;
-        _agentClient = agentClient;
         _kernel = kernel;
+        _networkEngine = networkEngine;
     }
 
     public new void Run()
@@ -33,9 +34,8 @@ public sealed class App : RoadBuddyApp, IRoadBuddyApp
 
     protected override void OnUpdate(float deltaTime)
     {
-        _gatewayConnector.Update();
-        _agentClient.Update();
-
+        _networkEngine.Update();
+   
         base.OnUpdate(deltaTime);
     }
 }

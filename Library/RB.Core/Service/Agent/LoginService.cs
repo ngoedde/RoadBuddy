@@ -1,4 +1,5 @@
 using RB.Core.Net.Common.Messaging;
+using RB.Core.Network;
 using RB.Core.Network.Agent;
 using Serilog;
 
@@ -9,9 +10,9 @@ public sealed class LoginService
     public delegate void OnLoginErrorEventHandler(byte code);
     public delegate void OnLoginSuccessEventHandler();
 
-    private readonly IAgentClient _agentClient;
+    private readonly ServerEngine _agentClient;
 
-    public LoginService(IAgentClient agentClient)
+    public LoginService(ServerEngine agentClient)
     {
         _agentClient = agentClient;
 
